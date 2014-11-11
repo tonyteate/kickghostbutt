@@ -26,7 +26,7 @@ public GameView(Context context, AttributeSet attrs) {
 
 	public GameView(Context context) {
 		super(context);
-		GamePiece player = new GamePiece(1, 0, 0, new Rect(0, 0, 50, 50), BitmapFactory.decodeResource(getResources(), R.drawable.ic_launcher));
+		GamePiece player = new GamePiece(1, 0, 0, 50, 50, BitmapFactory.decodeResource(getResources(), R.drawable.ic_launcher));
 		this.addGamePiece(player);
 		// TODO Auto-generated constructor stub
 	}
@@ -38,6 +38,9 @@ public void addGamePiece (GamePiece g) {
 @Override
 public void onDraw(Canvas c) {
 	super.onDraw(c);
+	for(GamePiece g : this.gamePieces) {
+		g.update();
+	}
 	for(GamePiece g : this.gamePieces) {
 		g.draw(c);
 	}
