@@ -15,6 +15,11 @@ public class GameView extends View {
 
 	private ArrayList<OnScreenObject> onScreenObjects = new ArrayList<OnScreenObject>();
 	private Player player;
+	private int numTicks;
+	private int timeLeftButtonTouched;
+	private int timeDownButtonTouched;
+	private int timeUpButtonTouched;
+	private int timeRightButtonTouched;
 
 	public GameView(Context context, AttributeSet attrs, int defStyleAttr) {
 		super(context, attrs, defStyleAttr);
@@ -30,6 +35,7 @@ public class GameView extends View {
 		super(context);
 		this.player = new Player(1, 0, 0, 50, 50, BitmapFactory.decodeResource(getResources(), R.drawable.ic_launcher));
 		this.addGamePiece(player);
+		this.numTicks = 0;
 		// TODO Auto-generated constructor stub
 	}
 
@@ -41,12 +47,15 @@ public class GameView extends View {
 	public void onDraw(Canvas c) {
 		super.onDraw(c);
 		
+
+		numTicks += 1;
+		
 		Paint paint = new Paint();
 		paint.setARGB(255, 255, 0, 0);
 		
+		
 		//left, top, right, bottom
 		//each button is a 50x50 pixel rectangle
-		
 		
 		//left
 		c.drawRect(new Rect(10, this.getHeight() - 60, 60, this.getHeight() - 10 ), paint);
@@ -64,6 +73,9 @@ public class GameView extends View {
 		for(OnScreenObject oso : this.onScreenObjects) {
 			oso.draw(c);
 		}
+		
+		
+		invalidate();
 	}
 
 	public ArrayList<OnScreenObject> getOnScreenObjects() {
@@ -75,17 +87,52 @@ public class GameView extends View {
 		int x = (int)e.getX();
 		int y = (int)e.getY();
 		
+		//each button has its own startTime, just like they have their own click times
+		
 		//left button touched
 		if((x > 10) && (x < 60) && (y < this.getHeight()-10) && (y > this.getHeight()-60)) {
-			this.player.setxVelocity(-2);
+			//stored time when button is touched (start time)
+			this.timeLeftButtonTouched = this.numTicks;
+			//totalTimeTime is how many clock cycles or number of ticks we want the player to move
+			//when a button is pressed
+			
+			//set non-zero when current time - start time <= totalMoveTime
+			if(this.numTicks - this.timeLeftButtonTouched <= 5) {
+				this.player.setxVelocity(-2);
+				this.player.setyVelocity(0);
+				
+				//setting yVelocity to zero means that once button is pressed all other movements canceled
+				
+			} else {
+			//set zero when current time - start time >= totalMoveTime
+				this.player.setxVelocity(0);
+			}
 		}
 		//bottum button touched
 		if((x > 70) && (x < 120) && (y < this.getHeight()-10) && (y > this.getHeight()-60)) {
-			this.player.setyVelocity(2);
+			//stored time when button is touched (start time)
+			this.timeLeftButtonTouched = this.numTicks;
+			//totalTimeTime is how many clock cycles or number of ticks we want the player to move
+			//when a button is pressed
+			
+			//set non-zero when current time - start time <= totalMoveTime
+			if(this.numTicks - this.timeLeftButtonTouched <= 5) {
+				this.player.setxVelocity(0);
+				this.player.setyVelocity(2);
+				
+				//setting yVelocity to zero means that once button is pressed all other movements canceled
+				
+			} else {
+			//set zero when current time - start time >= totalMoveTime
+				this.player.setyVelocity(0);
+			}
 		}
 		//top button touched
 		if((x > 130) && (x < 180) && (y < this.getHeight()-10) && (y > this.getHeight()-60)) {
 			this.player.setyVelocity(-2);
+			
+			
+			
 		}
 		//right button touched
 		if((x > 190) && (x < 240) && (y < this.getHeight()-10) && (y > this.getHeight()-60)) {

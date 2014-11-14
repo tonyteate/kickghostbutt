@@ -9,6 +9,8 @@ public class OnScreenObject {
 	
 	protected int xPosition;
 	protected int yPosition;
+	protected int width;
+	protected int height;
 	protected Bitmap image;
 	protected Rect bounds;
 	protected int id;
@@ -17,7 +19,9 @@ public class OnScreenObject {
 		this.id = id;
 		this.xPosition = xP;
 		this.yPosition = yP;
-		this.bounds = new Rect(this.xPosition-width/2, this.yPosition-width/2, this.xPosition+width/2,this.yPosition+width/2);
+		this.width = width;
+		this.height = height;
+		this.bounds = new Rect(this.xPosition-width/2, this.yPosition-height/2, this.xPosition+width/2,this.yPosition+height/2);
 		this.image = Bitmap.createBitmap(sourceImage, 0, 0, width, height);
 	}
 
