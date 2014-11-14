@@ -24,6 +24,8 @@ public class GamePiece extends OnScreenObject {
 	public void update() {
 		this.xPosition += this.xVelocity;
 		this.yPosition += this.yVelocity;
+		
+		this.bounds.set(this.xPosition-this.width/2, this.yPosition-this.height/2, this.xPosition+this.width/2,this.yPosition+this.height/2);
 	}
 	
 	//position
