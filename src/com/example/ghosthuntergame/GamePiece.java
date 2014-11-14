@@ -23,7 +23,7 @@ public class GamePiece {
 	public void draw(Canvas c) {
 		c.drawBitmap(this.image, (float) this.xPosition, (float) this.yPosition, null);
 	}
-
+	
 	public double getxPosition() {
 		return xPosition;
 	}
