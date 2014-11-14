@@ -41,19 +41,21 @@ public class GameView extends View {
 	public void onDraw(Canvas c) {
 		super.onDraw(c);
 		
+		Paint paint = new Paint();
+		paint.setARGB(255, 255, 0, 0);
 		
 		//left, top, right, bottom
 		//each button is a 50x50 pixel rectangle
 		
 		
 		//left
-		c.drawRect(new Rect(10, this.getHeight() - 60, 60, this.getHeight() - 10 ), null);
+		c.drawRect(new Rect(10, this.getHeight() - 60, 60, this.getHeight() - 10 ), paint);
 		//down
-		c.drawRect(new Rect(70, this.getHeight() - 60, 120, this.getHeight() - 10 ), null);
+		c.drawRect(new Rect(70, this.getHeight() - 60, 120, this.getHeight() - 10 ), paint);
 		//up
-		c.drawRect(new Rect(130, this.getHeight() - 60, 180, this.getHeight() - 10 ), null);
+		c.drawRect(new Rect(130, this.getHeight() - 60, 180, this.getHeight() - 10 ), paint);
 		//right
-		c.drawRect(new Rect(190, this.getHeight() - 60, 240, this.getHeight() - 10 ), null);
+		c.drawRect(new Rect(190, this.getHeight() - 60, 240, this.getHeight() - 10 ), paint);
 		
 		
 		for(OnScreenObject oso : this.onScreenObjects) {
