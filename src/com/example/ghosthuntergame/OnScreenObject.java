@@ -26,7 +26,7 @@ public class OnScreenObject {
 	}
 
 	public void draw(Canvas c) {
-		c.drawBitmap(this.image, this.bounds, this.bounds, null);
+		c.drawBitmap(this.image, null, this.bounds, null);
 	}
 
 	public double getxPosition() {

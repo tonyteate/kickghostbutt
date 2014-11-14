@@ -128,14 +128,43 @@ public class GameView extends View {
 		}
 		//top button touched
 		if((x > 130) && (x < 180) && (y < this.getHeight()-10) && (y > this.getHeight()-60)) {
-			this.player.setyVelocity(-2);
+			//stored time when button is touched (start time)
+			this.timeLeftButtonTouched = this.numTicks;
+			//totalTimeTime is how many clock cycles or number of ticks we want the player to move
+			//when a button is pressed
 			
+			//set non-zero when current time - start time <= totalMoveTime
+			if(this.numTicks - this.timeLeftButtonTouched <= 5) {
+				this.player.setxVelocity(0);
+				this.player.setyVelocity(-2);
+				
+				//setting yVelocity to zero means that once button is pressed all other movements canceled
+				
+			} else {
+			//set zero when current time - start time >= totalMoveTime
+				this.player.setyVelocity(0);
+			}
 			
 			
 		}
 		//right button touched
 		if((x > 190) && (x < 240) && (y < this.getHeight()-10) && (y > this.getHeight()-60)) {
-			this.player.setxVelocity(2);
+			//stored time when button is touched (start time)
+			this.timeLeftButtonTouched = this.numTicks;
+			//totalTimeTime is how many clock cycles or number of ticks we want the player to move
+			//when a button is pressed
+			
+			//set non-zero when current time - start time <= totalMoveTime
+			if(this.numTicks - this.timeLeftButtonTouched <= 5) {
+				this.player.setxVelocity(2);
+				this.player.setyVelocity(0);
+				
+				//setting yVelocity to zero means that once button is pressed all other movements canceled
+				
+			} else {
+			//set zero when current time - start time >= totalMoveTime
+				this.player.setxVelocity(0);
+			}
 		}
 		
 		
