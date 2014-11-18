@@ -17,10 +17,6 @@ public class GamePiece extends OnScreenObject {
 		this.yVelocity = 0;
 	}
 	
-	public void draw(Canvas c) {
-		c.drawBitmap(this.image, this.bounds, this.bounds, null);
-	}
-	
 	public void update() {
 		this.xPosition += this.xVelocity;
 		this.yPosition += this.yVelocity;
