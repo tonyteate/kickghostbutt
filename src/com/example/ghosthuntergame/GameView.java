@@ -71,7 +71,16 @@ public class GameView extends View {
 		//call this code every 1000 clock cycles
 		
 		if(numTicks%100 == 0) {
-			this.onScreenObjects.add(new Ghost(onScreenObjects.size(), (int)(Math.random() * this.getWidth()), (int)(Math.random() * this.getHeight()), 40, 40, BitmapFactory.decodeResource(getResources(), R.drawable.ghost_object_image)));
+			this.onScreenObjects.add(new Ghost(onScreenObjects.size(), (int)(Math.random() * this.getWidth()), (int)(Math.random() * this.getHeight()), 40, 40, BitmapFactory.decodeResource(getResources(), R.drawable.ghost_object_image), this.player));
+			
+		}
+		
+		if(numTicks%50 == 0) {
+			for(int i = 1; i < onScreenObjects.size(); i++) {
+				Ghost g = (Ghost)this.onScreenObjects.get(i);
+				g.setSpeedX(this.player);
+				g.setSpeedY(this.player);
+			}
 		}
 
 		
