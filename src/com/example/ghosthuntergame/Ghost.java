@@ -7,10 +7,21 @@ import android.graphics.Rect;
 
 public class Ghost extends GamePiece {
 
-	public Ghost(int id, int xP, int yP, int height, int width,Bitmap sourceImage, Player player) {
+	int damage;
+	
+	public Ghost(int id, int xP, int yP, int height, int width,Bitmap sourceImage, Player player, int damage) {
 		super(id, xP, yP, height, width, sourceImage);
 		this.setSpeedX(player);
 		this.setSpeedY(player);
+		this.setDamage(damage);
+	}
+
+	public int getDamage() {
+		return damage;
+	}
+
+	public void setDamage(int damage) {
+		this.damage = damage;
 	}
 
 	public void setSpeedX(Player player) {
@@ -22,6 +33,7 @@ public class Ghost extends GamePiece {
 		if(destinationX < 0) {
 			
 			this.setxVelocity(-1);
+			
 		} else if (destinationX > 0) {
 			
 			this.setxVelocity(1);

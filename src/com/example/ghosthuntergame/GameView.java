@@ -1,6 +1,7 @@
 package com.example.ghosthuntergame;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 
 import android.content.Context;
 import android.graphics.BitmapFactory;
@@ -13,7 +14,7 @@ import android.view.View;
 
 public class GameView extends View {
 
-	private ArrayList<OnScreenObject> onScreenObjects = new ArrayList<OnScreenObject>();
+	private ArrayList<Ghost> ghostList = new ArrayList<Ghost>();
 	private Player player;
 	private int numTicks;
 	private int timeLeftButtonTouched;
@@ -34,15 +35,14 @@ public class GameView extends View {
 	public GameView(Context context) {
 		super(context);
 		this.player = new Player(1, 0, 0, 50, 50, BitmapFactory.decodeResource(getResources(), R.drawable.ic_launcher));
-		this.addGamePiece(player);
 		this.numTicks = 0;
 		
 		
 		// TODO Auto-generated constructor stub
 	}
 
-	public void addGamePiece (GamePiece g) {
-		this.onScreenObjects.add(g);
+	public void addGamePiece (Ghost g) {
+		this.ghostList.add(g);
 	}
 
 	@Override
@@ -70,33 +70,93 @@ public class GameView extends View {
 		
 		//call this code every 1000 clock cycles
 
-		
-		if(numTicks%100 == 0) {
-			this.onScreenObjects.add(new Ghost(onScreenObjects.size(), (int)(Math.random() * this.getWidth()), (int)(Math.random() * this.getHeight()), 40, 40, BitmapFactory.decodeResource(getResources(), R.drawable.ghost_object_image), this.player));
+		/*
+		if(numTicks == 100) {
+			this.ghostList.add(new Ghost(ghostList.size(), (int)(Math.random() * this.getWidth()), (int)(Math.random() * this.getHeight()), 40, 40, BitmapFactory.decodeResource(getResources(), R.drawable.ghost_object_image), this.player, 5));
+		}
+		*/
+		if(numTicks % 100 == 0) {
+			this.ghostList.add(new Ghost(ghostList.size(), (int)(Math.random() * this.getWidth()), (int)(Math.random() * this.getHeight()), 40, 40, BitmapFactory.decodeResource(getResources(), R.drawable.ghost_object_image), this.player, 5));
 		}
 		
-		if(numTicks%50 == 0) {
-			for(int i = 1; i < onScreenObjects.size(); i++) {
-				Ghost g = (Ghost)this.onScreenObjects.get(i);
+		if(numTicks % 50 == 0) {
+			for(int i = 0; i < ghostList.size(); i++) {
+				Ghost g = this.ghostList.get(i);
 				g.setSpeedX(this.player);
 				g.setSpeedY(this.player);
 			}
 		}
 
-		
-		for(OnScreenObject oso : this.onScreenObjects) {
-			oso.update();
+		//check collisions between all ghosts and the player
+		Iterator<Ghost> iterator = this.ghostList.iterator();
+		while(iterator.hasNext()) {
+			
+			Ghost ghost = iterator.next();
+			int collisionResult = CollisionBox.checkCollision(this.player, ghost);
+			
+			if(collisionResult == 1) {
+				//remove ghost from ghostList
+				iterator.remove();
+				//increase the player's score
+				this.player.setScore(this.player.getScore() + 1); //score is total # of ghosts killed
+				
+			} else if(collisionResult == 2) {
+				//reduce health of player
+				this.player.setHealth(this.player.getHealth() - ghost.getDamage());
+				
+				//reverse y-direction of the player
+				this.player.setyVelocity((int)(-1 * this.player.getyVelocity()));
+				
+				//reverse y-direction of the ghost
+				ghost.setyVelocity((int)(-1 * ghost.getyVelocity()));
+				
+			} else if(collisionResult == 3) {
+				//reduce health of player
+				this.player.setHealth(this.player.getHealth() - ghost.getDamage());
+				
+				//reverse x-direction of player
+				this.player.setxVelocity((int)(-1 * this.player.getxVelocity()));
+				
+				//reverse x-direction of ghost
+				ghost.setxVelocity((int)(-1 * ghost.getxVelocity()));
+				
+			} else if(collisionResult == 4) {
+				//reduce health of player
+				this.player.setHealth(this.player.getHealth() - ghost.getDamage());
+				
+				//reverse x-direction of player
+				this.player.setxVelocity((int)(-1 * this.player.getxVelocity()));
+				
+				//reverse x-direction of ghost
+				ghost.setxVelocity((int)(-1 * ghost.getxVelocity()));
+			} else {
+				
+			}
+			
 		}
-		for(OnScreenObject oso : this.onScreenObjects) {
-			oso.draw(c);
+		
+		//Update all onScreenObjects in game
+		//update player
+		this.player.update();
+		//update ghosts
+		for(Ghost ghost : this.ghostList) {
+			ghost.update();
+		}
+		
+		//Draw all onScreenObjects in game
+		//draw player
+		this.player.draw(c);
+		//draw ghosts
+		for(Ghost ghost : this.ghostList) {
+			ghost.draw(c);
 		}
 		
 		
 		invalidate();
 	}
 
-	public ArrayList<OnScreenObject> getOnScreenObjects() {
-		return this.onScreenObjects;
+	public ArrayList<Ghost> getGhostList() {
+		return this.ghostList;
 	}
 	
 	@Override

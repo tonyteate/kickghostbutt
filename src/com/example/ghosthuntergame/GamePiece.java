@@ -17,7 +17,9 @@ public class GamePiece extends OnScreenObject {
 		this.yVelocity = 0;
 	}
 	
+	@Override
 	public void update() {
+		
 		this.xPosition += this.xVelocity;
 		this.yPosition += this.yVelocity;
 		
