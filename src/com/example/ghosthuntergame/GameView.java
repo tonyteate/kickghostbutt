@@ -33,7 +33,7 @@ public class GameView extends View {
 
 	public GameView(Context context) {
 		super(context);
-		this.player = new Player(1, 0, 0, 50, 50, BitmapFactory.decodeResource(getResources(), R.drawable.ic_launcher));
+		this.player = new Player(1, 0, 0, 50, 50, BitmapFactory.decodeResource(getResources(), R.drawable.top_down_knight));
 		this.addGamePiece(player);
 		this.numTicks = 0;
 		
@@ -58,6 +58,7 @@ public class GameView extends View {
 		
 		//left, top, right, bottom
 		//each button is a 50x50 pixel rectangle
+		
 		
 		//left
 		c.drawRect(new Rect(10, this.getHeight() - 60, 60, this.getHeight() - 10 ), paint);
