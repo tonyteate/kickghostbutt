@@ -1,9 +1,12 @@
 package com.example.ghosthuntergame;
 
 import android.app.Activity;
+import android.content.Context;
+import android.content.res.Resources;
 import android.graphics.BitmapFactory;
 import android.graphics.Rect;
 import android.os.Bundle;
+import android.util.TypedValue;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
@@ -12,9 +15,12 @@ import android.view.View.OnTouchListener;
 
 public class GameActivity extends Activity {
 
+	static Context context;
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		this.context = getApplicationContext();
 		setContentView(new GameView(this));
 		
 	}
@@ -36,6 +42,12 @@ public class GameActivity extends Activity {
 			return true;
 		}
 		return super.onOptionsItemSelected(item);
+	}
+	
+	public static int dP(int pixels) {
+		Resources r = context.getResources();
+		float px = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, pixels, r.getDisplayMetrics());
+		return (int)px;
 	}
 
 }

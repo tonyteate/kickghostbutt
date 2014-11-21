@@ -3,6 +3,7 @@ package com.example.ghosthuntergame;
 import java.util.ArrayList;
 
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Paint;
@@ -20,36 +21,73 @@ public class GameView extends View {
 	private int timeDownButtonTouched;
 	private int timeUpButtonTouched;
 	private int timeRightButtonTouched;
+	private Rect buttonLeft;
+	private Rect buttonDown;
+	private Rect buttonUp;
+	private Rect buttonRight;
+	private Bitmap buttonLeftImage;
+	private Bitmap buttonDownImage;
+	private Bitmap buttonUpImage;
+	private Bitmap buttonRightImage;
+	
+	public int dP(int pixels) {
+		return GameActivity.dP(pixels);
+	}
+	
+	@Override
+	protected void onSizeChanged(int w, int h, int oldw, int oldh) {
+		super.onSizeChanged(w, h, oldw, oldh);
+		if(w != 0) {
+			//integers to create the buttons
+			int padding = dP(10);
+			int screenWidth = getWidth() - 5*padding;
+			int screenHeight = getHeight();
+			int buttonWidth = screenWidth/4;
+			
+			buttonLeft = new Rect(padding, screenHeight - dP(100), buttonWidth + padding, screenHeight - dP(20));
+			buttonDown = new Rect(buttonLeft.right + padding, screenHeight - dP(100), buttonLeft.right + padding + buttonWidth, screenHeight - dP(20));
+			buttonUp = new Rect(buttonDown.right + padding, screenHeight - dP(100), buttonDown.right + padding + buttonWidth, screenHeight - dP(20));
+			buttonRight = new Rect(buttonUp.right + padding, screenHeight - dP(100), buttonUp.right + padding + buttonWidth, screenHeight - dP(20));
+			
+			System.out.println(buttonLeft.height());
+			System.out.println(buttonLeft.width());
 
+			buttonLeftImage = Bitmap.createScaledBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.button_arrow_left), buttonLeft.width(), buttonLeft.height(), true);
+			buttonDownImage = Bitmap.createScaledBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.button_arrow_down), buttonDown.width(), buttonDown.height(), true);
+			buttonUpImage = Bitmap.createScaledBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.button_arrow_up), buttonUp.width(), buttonUp.height(), true);
+			buttonRightImage = Bitmap.createScaledBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.button_arrow_right), buttonRight.width(), buttonRight.height(), true);
+		}
+	}
+	
 	public GameView(Context context, AttributeSet attrs, int defStyleAttr) {
 		super(context, attrs, defStyleAttr);
-		// TODO Auto-generated constructor stub
+		initialize();
 	}
 
 	public GameView(Context context, AttributeSet attrs) {
 		super(context, attrs);
-		// TODO Auto-generated constructor stub
+		initialize();
 	}
 
 	public GameView(Context context) {
 		super(context);
-		this.player = new Player(1, 0, 0, 50, 50, BitmapFactory.decodeResource(getResources(), R.drawable.top_down_knight));
-		this.addGamePiece(player);
-		this.numTicks = 0;
-		
-		
-		// TODO Auto-generated constructor stub
+		initialize();
 	}
 
 	public void addGamePiece (GamePiece g) {
 		this.onScreenObjects.add(g);
 	}
+	
+	public void initialize() {
+		this.player = new Player(1, dP(50), dP(50), dP(50), dP(50), BitmapFactory.decodeResource(getResources(), R.drawable.top_down_knight));
+		this.addGamePiece(player);
+		this.numTicks = 0;
+		}
 
 	@Override
 	public void onDraw(Canvas c) {
 		super.onDraw(c);
-		
-
+				
 		numTicks += 1;
 		
 		Paint paint = new Paint();
@@ -57,23 +95,21 @@ public class GameView extends View {
 		
 		
 		//left, top, right, bottom
-		//each button is a 50x50 pixel rectangle
-		
 		
 		//left
-		c.drawRect(new Rect(10, this.getHeight() - 60, 60, this.getHeight() - 10 ), paint);
+		c.drawBitmap(buttonLeftImage, null, buttonLeft, null);
 		//down
-		c.drawRect(new Rect(70, this.getHeight() - 60, 120, this.getHeight() - 10 ), paint);
+		c.drawBitmap(buttonDownImage, null, buttonDown, null);
 		//up
-		c.drawRect(new Rect(130, this.getHeight() - 60, 180, this.getHeight() - 10 ), paint);
+		c.drawBitmap(buttonUpImage, null, buttonUp, null);
 		//right
-		c.drawRect(new Rect(190, this.getHeight() - 60, 240, this.getHeight() - 10 ), paint);
+		c.drawBitmap(buttonRightImage, null, buttonRight, null);
 		
 		//call this code every 1000 clock cycles
 
 		
 		if(numTicks%100 == 0) {
-			this.onScreenObjects.add(new Ghost(onScreenObjects.size(), (int)(Math.random() * this.getWidth()), (int)(Math.random() * this.getHeight()), 40, 40, BitmapFactory.decodeResource(getResources(), R.drawable.ghost_object_image), this.player));
+			this.onScreenObjects.add(new Ghost(onScreenObjects.size(), (int)(Math.random() * this.getWidth()), (int)(Math.random() * this.getHeight()), dP(40), dP(40), BitmapFactory.decodeResource(getResources(), R.drawable.ghost_object_image), this.player));
 		}
 		
 		if(numTicks%50 == 0) {
@@ -108,7 +144,7 @@ public class GameView extends View {
 		//each button has its own startTime, just like they have their own click times
 		
 		//left button touched
-		if((x > 10) && (x < 60) && (y < this.getHeight()-10) && (y > this.getHeight()-60)) {
+		if(buttonLeft.contains(x, y)) {
 			//stored time when button is touched (start time)
 			this.timeLeftButtonTouched = this.numTicks;
 			//totalTimeTime is how many clock cycles or number of ticks we want the player to move
@@ -127,7 +163,7 @@ public class GameView extends View {
 			}
 		}
 		//bottum button touched
-		if((x > 70) && (x < 120) && (y < this.getHeight()-10) && (y > this.getHeight()-60)) {
+		if(buttonDown.contains(x, y)) {
 			//stored time when button is touched (start time)
 			this.timeLeftButtonTouched = this.numTicks;
 			//totalTimeTime is how many clock cycles or number of ticks we want the player to move
@@ -146,7 +182,7 @@ public class GameView extends View {
 			}
 		}
 		//top button touched
-		if((x > 130) && (x < 180) && (y < this.getHeight()-10) && (y > this.getHeight()-60)) {
+		if(buttonUp.contains(x, y)) {
 			//stored time when button is touched (start time)
 			this.timeLeftButtonTouched = this.numTicks;
 			//totalTimeTime is how many clock cycles or number of ticks we want the player to move
@@ -167,7 +203,7 @@ public class GameView extends View {
 			
 		}
 		//right button touched
-		if((x > 190) && (x < 240) && (y < this.getHeight()-10) && (y > this.getHeight()-60)) {
+		if(buttonRight.contains(x, y)) {
 			//stored time when button is touched (start time)
 			this.timeLeftButtonTouched = this.numTicks;
 			//totalTimeTime is how many clock cycles or number of ticks we want the player to move
