@@ -1,0 +1,50 @@
+*.DS_Store
+
+# Build files
+*.apk
+*.ap_
+# Dex files
+*.dex
+# Java class files
+*.class
+# Backup files
+*~
+*/build/*
+*/*/build/*
+
+# Android
+libs/*javadoc*
+libs/*sources*
+gen/*
+local.properties
+out/*
+bin/*
+lint.xml
+**/res/values-v1/*
+classes/*
+*.log
+
+# Maven
+gen-external-apklibs/*
+target/*
+pom.xml.releaseBackup
+release.properties
+tmp/*
+
+# IntelliJ
+*.iml
+*.ipr
+*.iws
+*.eml
+*.swp
+.idea/*
+
+# Eclipse
+.settings/*
+*.userlibraries
+.classpath
+.project
+
+# Gradle
+.gradle/*
+build/*
