@@ -23,7 +23,7 @@ public class OnScreenObject {
 		this.width = width;
 		this.height = height;
 		this.bounds = new Rect(this.xPosition-width/2, this.yPosition-height/2, this.xPosition+width/2,this.yPosition+height/2);
-		this.image = Bitmap.createBitmap(sourceImage, 0, 0, width, height);
+		this.image = Bitmap.createScaledBitmap(sourceImage, width, height, true);
 	}
 
 	public void draw(Canvas c) {
