@@ -24,6 +24,12 @@ public class GamePiece extends OnScreenObject {
 		this.bounds.set(this.xPosition-this.width/2, this.yPosition-this.height/2, this.xPosition+this.width/2,this.yPosition+this.height/2);
 	}
 	
+	// ID
+	
+	public int getId() {
+		return this.id;
+	}
+	
 	//position
 	
 	public double getxPosition() {
@@ -60,8 +66,6 @@ public class GamePiece extends OnScreenObject {
 		this.yVelocity = yVelocity;
 	}
 	
-	
-
 	public Rect getBounds() {
 		return bounds;
 	}

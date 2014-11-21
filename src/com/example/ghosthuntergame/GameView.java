@@ -66,6 +66,10 @@ public class GameView extends View {
 		//right
 		c.drawRect(new Rect(190, this.getHeight() - 60, 240, this.getHeight() - 10 ), paint);
 		
+		//call this code every 1000 clock cycles
+		if(numTicks%100 == 0) {
+			this.onScreenObjects.add(new Ghost(onScreenObjects.size(), (int)(Math.random() * this.getWidth()), (int)(Math.random() * this.getHeight()), 40, 40, BitmapFactory.decodeResource(getResources(), R.drawable.ghost_object_image)));
+		}
 		
 		for(OnScreenObject oso : this.onScreenObjects) {
 			oso.update();
