@@ -69,7 +69,7 @@ public class GameView extends View {
 		
 		//call this code every 1000 clock cycles
 		if(numTicks == 100) {
-			this.onScreenObjects.add(new Ghost(1, 100, 100, 50, 50, BitmapFactory.decodeResource(getResources(), R.drawable.ghost_object_image)));
+			this.onScreenObjects.add(new Ghost(2, 100, 100, 50, 50, BitmapFactory.decodeResource(getResources(), R.drawable.ghost_object_image)));
 		}
 		
 		

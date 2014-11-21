@@ -60,7 +60,6 @@ public class GamePiece extends OnScreenObject {
 		this.yVelocity = yVelocity;
 	}
 	
-	
 
 	public Rect getBounds() {
 		return bounds;

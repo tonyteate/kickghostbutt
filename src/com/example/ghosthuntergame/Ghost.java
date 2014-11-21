@@ -9,8 +9,8 @@ public class Ghost extends GamePiece {
 
 	public Ghost(int id, int xP, int yP, int height, int width,Bitmap sourceImage) {
 		super(id, xP, yP, height, width, sourceImage);
-		this.setxVelocity(1);
-		this.setyVelocity(1);
+		this.setxVelocity(0);
+		this.setyVelocity(0);
 	}
 
 

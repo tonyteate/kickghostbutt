@@ -49,6 +49,14 @@ public class OnScreenObject {
 		return bounds;
 	}
 	
+	public int getHeight() {
+		return this.height;
+	}
+	
+	public int getWidth() {
+		return this.width;
+	}
+	
 	public void update() {
 		
 	}
