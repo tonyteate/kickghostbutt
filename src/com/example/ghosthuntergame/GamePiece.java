@@ -66,22 +66,6 @@ public class GamePiece extends OnScreenObject {
 		this.yVelocity = yVelocity;
 	}
 	
-	public double getxVelocity() {
-		return this.xVelocity;
-	}
-
-	public void setxVelocity(int xVelocity) {
-		this.xVelocity = xVelocity;
-	}
-
-	public double getyVelocity() {
-		return this.yVelocity;
-	}
-
-	public void setyVelocity(int yVelocity) {
-		this.yVelocity = yVelocity;
-	}
-	
 	public Rect getBounds() {
 		return bounds;
 	}
