@@ -1,3 +1,4 @@
+
 package com.example.ghosthuntergame;
 
 import android.graphics.Bitmap;
@@ -49,6 +50,14 @@ public class OnScreenObject {
 		return bounds;
 	}
 	
+	public int getHeight() {
+		return this.height;
+	}
+	
+	public int getWidth() {
+		return this.width;
+	}
+	
 	public void update() {
 		
 	}
@@ -59,3 +68,4 @@ public class OnScreenObject {
 
 	
 }
+
