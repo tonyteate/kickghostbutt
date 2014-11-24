@@ -190,7 +190,15 @@ public class CollisionBox {
 			return null;
 			
 			}
-			
+		}	
+
+		public static boolean checkCollisionFriendlyGhost(FriendlyGhost f, Ghost g) {
+			if (Rect.intersects(f.getBounds(), g.getBounds())) {
+				return true;
+			} else {
+				return false;
+			}
+
 		}
 	
 		
