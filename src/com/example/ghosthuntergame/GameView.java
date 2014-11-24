@@ -175,7 +175,18 @@ public class GameView extends View {
 		}
 
 		if((this.player.getScore() > 25) && (this.player.getScore() % 20 == 0) && (this.numTicks % 300 == 0)) {
-			this.powerUpList.add(new PowerUp(powerUpType.BOMB, powerUpList.size(), (int)(Math.random() * this.getWidth()), (int)(Math.random() * this.getHeight()), dP(40), dP(40), BitmapFactory.decodeResource(getResources(), R.drawable.bomb_sprite)));
+			PowerUp bomb = new PowerUp(powerUpType.BOMB, powerUpList.size(), (int)(Math.random() * this.getWidth()), (int)(Math.random() * this.getHeight()), dP(40), dP(40), BitmapFactory.decodeResource(getResources(), R.drawable.bomb_sprite));
+			Iterator<GamePiece> iteratorWallList = this.wallList.iterator();
+			while(iteratorWallList.hasNext()) {
+				GamePiece wall = iteratorWallList.next();
+				if(Rect.intersects(bomb.getBounds(), wall.getBounds())) {
+					bomb.setxPosition((int)(bomb.getxPosition() + wall.getWidth() + dP(10)));
+				}
+				if(Rect.intersects(bomb.getBounds(), wall.getBounds())) {
+					bomb.setyPosition((int)(bomb.getyPosition() + wall.getHeight() + dP(10)));
+				}
+			}
+			this.powerUpList.add(bomb);
 		}
 		
 		if((this.player.getScore() >= 15) && (this.player.getScore() % 15 == 0) && (this.numTicks % 200 == 0)) {
