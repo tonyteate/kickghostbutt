@@ -28,8 +28,10 @@ public final class R {
         public static final int button_arrow_up=0x7f020003;
         public static final int down_button_image=0x7f020004;
         public static final int ghost_object_image=0x7f020005;
-        public static final int ic_launcher=0x7f020006;
-        public static final int top_down_knight=0x7f020007;
+        public static final int ghost_object_image_red=0x7f020006;
+        public static final int ic_launcher=0x7f020007;
+        public static final int top_down_knight=0x7f020008;
+        public static final int wall_image=0x7f020009;
     }
     public static final class id {
         public static final int action_settings=0x7f080007;

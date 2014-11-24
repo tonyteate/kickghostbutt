@@ -58,6 +58,14 @@ public class OnScreenObject {
 		return this.width;
 	}
 	
+	public Bitmap getBitmap() {
+		return this.image;
+	}
+	
+	public void setBitmap(Bitmap newImage) {
+		this.image = newImage;
+	}
+	
 	public void update() {
 		
 	}
