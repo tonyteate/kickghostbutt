@@ -13,5 +13,23 @@ public class Player extends GamePiece {
 		this.score = 0;
 		// TODO Auto-generated constructor stub
 	}
+
+	public int getHealth() {
+		return health;
+	}
+
+	public void setHealth(int health) {
+		this.health = health;
+	}
+
+	public int getScore() {
+		return score;
+	}
+
+	public void setScore(int score) {
+		this.score = score;
+	}
+	
+	
 	
 }

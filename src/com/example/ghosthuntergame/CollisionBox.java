@@ -9,10 +9,10 @@ public class CollisionBox {
 	// 1-above
 	// 
 	
-	public int checkCollision(Player player, Ghost ghost) {
+	public static int checkCollision(Player player, Ghost ghost) {
 		//CASE 1: player collides with top of ghost
 			//within gameView class:
-				//remove ghost from gamePieces
+				//remove ghost from ghostList
 				//increase the player's score
 		//CASE 2: player collides with bottom
 			//within gameView class:
@@ -50,32 +50,35 @@ public class CollisionBox {
 			
 			double playerX = player.getxPosition();
 			double playerY = player.getyPosition();
+			double playerHeight = player.getHeight();
+			double playerWidth = player.getWidth();
 			
+			double ghostX = ghost.getxPosition();
+			double ghostY = ghost.getyPosition();
+			double ghostHeight = ghost.getHeight();
+			double ghostWidth = ghost.getWidth();
 			
-			
-			//player is above ghost
 			//CASE 1
-			if(player.getyPosition() < ghost.getyPosition()) {
-				
-				
+			//player collides with TOP of ghost
+			if((playerY + (0.5*playerHeight)) < (ghostY - (0.5*ghostHeight) + buffer)) {
 				return top;
 			}
 			
-			//player is below ghost
-			//if y position of player is greater than y position of ghost
-			if(player.getyPosition() > ghost.getyPosition()) {
+			//CASE 2
+			//player collides with BOTTOM of ghost
+			if((playerY - (0.5*playerHeight)) > (ghostY + (0.5*ghostHeight) - buffer)) {
 				return bottom;
 			}
 			
-			//player is right of ghost
-			//if x position of player is greater than x position of ghost
-			if(player.getxPosition() > ghost.getxPosition()) {
+			//CASE 3
+			//player collides with RIGHT of ghost
+			if((playerX - (0.5*playerWidth)) > (ghostX + (0.5*ghostWidth) - buffer)) {
 				return right;
 			}
 			
-			//player is left of ghost
-			//if x position of player is greater than x position of ghost
-			if(player.getxPosition() > ghost.getxPosition()) {
+			//CASE 4
+			//player collides with LEFT of ghost
+			if((playerX + (0.5*playerWidth)) < (ghostX - (0.5*ghostWidth) + buffer)) {
 				return left;
 			}
 		}
