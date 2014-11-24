@@ -17,6 +17,7 @@ public class GameView extends View {
 
 	private ArrayList<Ghost> ghostList = new ArrayList<Ghost>();
 	private ArrayList<GamePiece> wallList = new ArrayList<GamePiece>();
+	private ArrayList<FriendlyGhost> friendlyGhostList = new ArrayList<FriendlyGhost>();
 	private Player player;
 	private int numTicks;
 	private int timeLeftButtonTouched;
@@ -152,6 +153,10 @@ public class GameView extends View {
 		if((this.player.getScore() > 0) &&(this.player.getScore() % 10 == 0) && (this.numTicks % 150 == 0)) {
 			this.ghostList.add(new Ghost(ghostList.size(), (int)(Math.random() * this.getWidth()), (int)(Math.random() * this.getHeight()), 60, 60, BitmapFactory.decodeResource(getResources(), R.drawable.ghost_object_image_red), this.player, 10));
 		}
+		
+		if(this.numTicks % 200 == 0) {
+			this.friendlyGhostList.add(new FriendlyGhost(friendlyGhostList.size(), (int)(Math.random() * this.getWidth()), 20, 40, 40, BitmapFactory.decodeResource(getResources(), R.drawable.ghost_object_image)));
+		}
 
 		//check collisions between all ghosts and the player
 		Iterator<Ghost> iterator = this.ghostList.iterator();
@@ -205,6 +210,26 @@ public class GameView extends View {
 			}
 			
 		}
+		
+		//check collision between friendly ghost and ghosts
+		Iterator<Ghost> iteratorGhostList = this.ghostList.iterator();
+		while(iteratorGhostList.hasNext()) {
+			Ghost g = iteratorGhostList.next();
+			boolean collisionResult = CollisionBox.checkCollisionFriendlyGhost(this.friendlyGhostList.get(0), g);
+			if (collisionResult == true) {
+				this.friendlyGhostList.clear();
+				iteratorGhostList.remove();
+			}
+		}
+		
+		//remove friendly ghost when it gets to the bottom
+		
+		for(GamePiece boundry : this.wallList) {
+		if(this.friendlyGhostList.get(0).getBounds().intersect(boundry.getBounds())) {
+			this.friendlyGhostList.clear();
+		}
+		}
+		
 		
 		//check collisions between all walls and player (assume ghost can phase through walls?)
 		Iterator<GamePiece> iteratorWallList = this.wallList.iterator();
