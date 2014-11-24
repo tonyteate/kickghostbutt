@@ -154,8 +154,8 @@ public class GameView extends View {
 			this.ghostList.add(new Ghost(ghostList.size(), (int)(Math.random() * this.getWidth()), (int)(Math.random() * this.getHeight()), 60, 60, BitmapFactory.decodeResource(getResources(), R.drawable.ghost_object_image_red), this.player, 10));
 		}
 		
-		if(this.numTicks % 200 == 0) {
-			this.friendlyGhostList.add(new FriendlyGhost(friendlyGhostList.size(), (int)(Math.random() * this.getWidth()), 20, 40, 40, BitmapFactory.decodeResource(getResources(), R.drawable.ghost_object_image)));
+		if(this.numTicks % 1000 == 0 && friendlyGhostList.size() == 0) {
+			this.friendlyGhostList.add(new FriendlyGhost(friendlyGhostList.size(), (int)(Math.random() * this.getWidth()), 20, 40, 40, BitmapFactory.decodeResource(getResources(), R.drawable.ghost_object_image_red)));
 		}
 
 		//check collisions between all ghosts and the player
@@ -212,24 +212,29 @@ public class GameView extends View {
 		}
 		
 		//check collision between friendly ghost and ghosts
+		if(friendlyGhostList.size() >0) {
 		Iterator<Ghost> iteratorGhostList = this.ghostList.iterator();
 		while(iteratorGhostList.hasNext()) {
 			Ghost g = iteratorGhostList.next();
-			boolean collisionResult = CollisionBox.checkCollisionFriendlyGhost(this.friendlyGhostList.get(0), g);
+			Iterator<FriendlyGhost> i = this.friendlyGhostList.iterator();
+			while(i.hasNext()) {
+			FriendlyGhost fGhost = i.next();
+			boolean collisionResult = CollisionBox.checkCollisionFriendlyGhost(fGhost, g);
 			if (collisionResult == true) {
-				this.friendlyGhostList.clear();
+				i.remove();
 				iteratorGhostList.remove();
 			}
 		}
-		
+		}
+		}
 		//remove friendly ghost when it gets to the bottom
-		
+		if(friendlyGhostList.size() >0) {
 		for(GamePiece boundry : this.wallList) {
 		if(this.friendlyGhostList.get(0).getBounds().intersect(boundry.getBounds())) {
 			this.friendlyGhostList.clear();
 		}
 		}
-		
+		}
 		
 		//check collisions between all walls and player (assume ghost can phase through walls?)
 		Iterator<GamePiece> iteratorWallList = this.wallList.iterator();
@@ -284,7 +289,11 @@ public class GameView extends View {
 		for(Ghost ghost : this.ghostList) {
 			ghost.update();
 		}
-		
+		if(friendlyGhostList.size() >0) {
+		for(FriendlyGhost ghost : this.friendlyGhostList) {
+			ghost.update();
+		}
+		}
 		//Draw all onScreenObjects in game
 		
 		//draw player
@@ -293,7 +302,11 @@ public class GameView extends View {
 		for(Ghost ghost : this.ghostList) {
 			ghost.draw(c);
 		}
-		
+		if(friendlyGhostList.size() >0) {
+		for(FriendlyGhost ghost: this.friendlyGhostList) {
+			ghost.draw(c);
+		}
+		}
 		//****VERY IMPORTANT FOR AESTHETICS****
 		// must draw ghosts before walls so that ghosts will be hidden when they move behind wall
 		
