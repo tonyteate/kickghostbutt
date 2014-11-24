@@ -3,6 +3,8 @@ package com.example.ghosthuntergame;
 import java.util.ArrayList;
 import java.util.Iterator;
 
+import com.example.ghosthuntergame.PowerUp.powerUpType;
+
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -17,6 +19,7 @@ public class GameView extends View {
 
 	private ArrayList<Ghost> ghostList = new ArrayList<Ghost>();
 	private ArrayList<GamePiece> wallList = new ArrayList<GamePiece>();
+	private ArrayList<PowerUp> powerUpList = new ArrayList<PowerUp>();
 	private Player player;
 	private int numTicks;
 	private int timeLeftButtonTouched;
@@ -83,7 +86,6 @@ public class GameView extends View {
 	public void initialize() {
 		this.player = new Player(1, dP(50), dP(50), dP(50), dP(50), BitmapFactory.decodeResource(getResources(), R.drawable.top_down_knight));
 		
-		this.wallList = new ArrayList<GamePiece>();
 		//boundaries: top, bottom, right, left
 //		int xPosition = 0;
 //		int yPosition = 0;
@@ -138,7 +140,17 @@ public class GameView extends View {
 		}
 		*/
 		if(numTicks % 100 == 0) {
-			this.ghostList.add(new Ghost(ghostList.size(), (int)(Math.random() * this.getWidth()), (int)(Math.random() * this.getHeight()), 40, 40, BitmapFactory.decodeResource(getResources(), R.drawable.ghost_object_image), this.player, 5));
+			int ghostX = (int)(Math.random() * this.getWidth());
+			int ghostY = (int)(Math.random() * this.getHeight());
+			if(ghostX <= (player.getxPosition() + (player.getWidth()/2)) && ghostX >= (player.getxPosition() - (player.getWidth()/2))) {
+				ghostX = ghostX + player.getWidth() + dP(10);
+			}
+			
+			if(ghostY <= (player.getyPosition() + (player.getHeight()/2)) && ghostY >= (player.getyPosition() - (player.getHeight()/2))) {
+				ghostY = ghostY + player.getHeight() + dP(10);
+			}
+			
+			this.ghostList.add(new Ghost(ghostList.size(), ghostX, ghostY, dP(40), dP(40), BitmapFactory.decodeResource(getResources(), R.drawable.ghost_object_image), this.player, 5));
 		}
 		
 		if(numTicks % 50 == 0) {
@@ -150,9 +162,29 @@ public class GameView extends View {
 		}
 		
 		if((this.player.getScore() > 0) &&(this.player.getScore() % 10 == 0) && (this.numTicks % 150 == 0)) {
-			this.ghostList.add(new Ghost(ghostList.size(), (int)(Math.random() * this.getWidth()), (int)(Math.random() * this.getHeight()), 60, 60, BitmapFactory.decodeResource(getResources(), R.drawable.ghost_object_image_red), this.player, 10));
+			int ghostX = (int)(Math.random() * this.getWidth());
+			int ghostY = (int)(Math.random() * this.getHeight());
+			if(ghostX <= (player.getxPosition() + (player.getWidth()/2)) && ghostX >= (player.getxPosition() - (player.getWidth()/2))) {
+				ghostX = ghostX + player.getWidth() + dP(10);
+			}
+			
+			if(ghostY <= (player.getyPosition() + (player.getHeight()/2)) && ghostY >= (player.getyPosition() - (player.getHeight()/2))) {
+				ghostY = ghostY + player.getHeight() + dP(10);
+			}
+			this.ghostList.add(new Ghost(ghostList.size(), ghostX, ghostY, dP(60), dP(60), BitmapFactory.decodeResource(getResources(), R.drawable.ghost_object_image_red), this.player, 10));
 		}
 
+		if((this.player.getScore() > 25) && (this.player.getScore() % 20 == 0) && (this.numTicks % 300 == 0)) {
+			this.powerUpList.add(new PowerUp(powerUpType.BOMB, powerUpList.size(), (int)(Math.random() * this.getWidth()), (int)(Math.random() * this.getHeight()), dP(40), dP(40), BitmapFactory.decodeResource(getResources(), R.drawable.bomb_sprite)));
+		}
+		
+		if((this.player.getScore() >= 15) && (this.player.getScore() % 15 == 0) && (this.numTicks % 200 == 0)) {
+			this.powerUpList.add(new PowerUp(powerUpType.HEALTH, powerUpList.size(), (int)(Math.random() * this.getWidth()), (int)(Math.random() * this.getHeight()), dP(40), dP(40), BitmapFactory.decodeResource(getResources(), R.drawable.heart_sprite)));
+		}
+		
+		if((this.player.getScore() > 30) && (this.player.getScore() % 30 == 0) && (this.numTicks % 300 == 0)) {
+			this.powerUpList.add(new PowerUp(powerUpType.COIN, powerUpList.size(), (int)(Math.random() * this.getWidth()), (int)(Math.random() * this.getHeight()), dP(40), dP(40), BitmapFactory.decodeResource(getResources(), R.drawable.coin_sprite)));
+		}
 		//check collisions between all ghosts and the player
 		Iterator<Ghost> iterator = this.ghostList.iterator();
 		while(iterator.hasNext()) {
@@ -250,6 +282,32 @@ public class GameView extends View {
 			
 		}
 		
+		//check for power-up collection
+		Iterator<PowerUp> powerUpIterator = this.powerUpList.iterator();
+		while(powerUpIterator.hasNext()) {
+			PowerUp power = powerUpIterator.next();
+			powerUpType type = CollisionBox.checkCollision(this.player, power);
+			if(type == powerUpType.BOMB) {
+				ghostList.clear();
+				player.setScore(player.getScore() + 5);
+				powerUpIterator.remove();
+			} else if(type == powerUpType.HEALTH) {
+				if(player.getHealth() < 800) {
+					player.setHealth(player.getHealth() + 200);
+					powerUpIterator.remove();
+				} else if (player.getHealth() > 800 && player.getHealth() < 1000){
+					player.setHealth(1000);
+					powerUpIterator.remove();
+				} else {
+					powerUpIterator.remove();
+				}
+			} else  if(type == powerUpType.COIN){
+				player.setScore(player.getScore() + 10);
+				powerUpIterator.remove();
+			} else {
+				
+			}
+		}
 		
 		//Update all onScreenObjects in game
 		
@@ -268,7 +326,9 @@ public class GameView extends View {
 		for(Ghost ghost : this.ghostList) {
 			ghost.draw(c);
 		}
-		
+		for(PowerUp powerUp: this.powerUpList) {
+			powerUp.draw(c);
+		}
 		//****VERY IMPORTANT FOR AESTHETICS****
 		// must draw ghosts before walls so that ghosts will be hidden when they move behind wall
 		

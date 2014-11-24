@@ -1,5 +1,7 @@
 package com.example.ghosthuntergame;
 
+import com.example.ghosthuntergame.PowerUp.powerUpType;
+
 import android.graphics.Rect;
 
 //class contains all methods that handle collision of objects in game
@@ -174,16 +176,20 @@ public class CollisionBox {
 	//________________________________________________________________________________________________________________
 		// PLAYER & PowerUp
 		
-		public static int checkCollisionPowerUp(Player player, GamePiece gamePiece) {
+		public static powerUpType checkCollision(Player player, PowerUp powerUp) {
 			//CASE: player collides with powerUp
 			
-			boolean collides = Rect.intersects(player.getBounds(),gamePiece.getBounds());
+			boolean collides = Rect.intersects(player.getBounds(),powerUp.getBounds());
 			
 			if(collides) {
 				
-			}
+				return powerUp.getType();
 			
-			return 0;
+			} else {
+				
+			return null;
+			
+			}
 			
 		}
 	
