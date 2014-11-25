@@ -62,8 +62,8 @@ public class OnScreenObject {
 		return this.image;
 	}
 	
-	public void setBitmap(Bitmap newImage) {
-		this.image = newImage;
+	public void setBitmap(Bitmap bitmap) {
+		this.image = Bitmap.createScaledBitmap(bitmap, this.width, this.height, true);
 	}
 	
 	public void update() {
