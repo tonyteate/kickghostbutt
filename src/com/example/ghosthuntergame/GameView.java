@@ -154,6 +154,7 @@ public class GameView extends View {
 			this.ghostList.add(new Ghost(ghostList.size(), ghostX, ghostY, dP(40), dP(40), BitmapFactory.decodeResource(getResources(), R.drawable.ghost_object_image), this.player, 5));
 		}
 
+		//makes the ghosts follow the player
 		if(numTicks % 50 == 0) {
 			for(int i = 0; i < ghostList.size(); i++) {
 				Ghost g = this.ghostList.get(i);
@@ -162,6 +163,7 @@ public class GameView extends View {
 			}
 		}
 
+		//conditions for the big ghost
 		if((this.player.getScore() > 0) &&(this.player.getScore() % 10 == 0) && (this.numTicks % 150 == 0)) {
 			int ghostX = (int)(Math.random() * this.getWidth());
 			int ghostY = (int)(Math.random() * this.getHeight());
@@ -175,10 +177,12 @@ public class GameView extends View {
 			this.ghostList.add(new Ghost(ghostList.size(), ghostX, ghostY, dP(60), dP(60), BitmapFactory.decodeResource(getResources(), R.drawable.ghost_object_image_red), this.player, 10));
 		}
 
+		//conditions for making friendly ghosts
 		if(this.numTicks % 1000 == 0 && friendlyGhostList.size() == 0) {
-			this.friendlyGhostList.add(new FriendlyGhost(friendlyGhostList.size(), (int)(Math.random() * this.getWidth()), 20, 40, 40, BitmapFactory.decodeResource(getResources(), R.drawable.ghost_object_image_red)));
+			this.friendlyGhostList.add(new FriendlyGhost(friendlyGhostList.size(), (int)(Math.random() * this.getWidth()), 20, dP(40), dP(40), BitmapFactory.decodeResource(getResources(), R.drawable.ghost_object_image_red)));
 		}
 
+		//conditions for the bomb power-up
 		if((this.player.getScore() > 25) && (this.player.getScore() % 20 == 0) && (this.numTicks % 300 == 0)) {
 			PowerUp bomb = new PowerUp(powerUpType.BOMB, powerUpList.size(), (int)(Math.random() * this.getWidth()), (int)(Math.random() * this.getHeight()), dP(40), dP(40), BitmapFactory.decodeResource(getResources(), R.drawable.bomb_sprite));
 			Iterator<GamePiece> iteratorWallList = this.wallList.iterator();
@@ -194,13 +198,38 @@ public class GameView extends View {
 			this.powerUpList.add(bomb);
 		}
 
+		//conditions to start making heart power-ups
 		if((this.player.getScore() >= 15) && (this.player.getScore() % 15 == 0) && (this.numTicks % 200 == 0)) {
-			this.powerUpList.add(new PowerUp(powerUpType.HEALTH, powerUpList.size(), (int)(Math.random() * this.getWidth()), (int)(Math.random() * this.getHeight()), dP(40), dP(40), BitmapFactory.decodeResource(getResources(), R.drawable.heart_sprite)));
+			PowerUp health = new PowerUp(powerUpType.HEALTH, powerUpList.size(), (int)(Math.random() * this.getWidth()), (int)(Math.random() * this.getHeight()), dP(40), dP(40), BitmapFactory.decodeResource(getResources(), R.drawable.heart_sprite));
+			Iterator<GamePiece> iteratorWallList = this.wallList.iterator();
+			while(iteratorWallList.hasNext()) {
+				GamePiece wall = iteratorWallList.next();
+				if(Rect.intersects(health.getBounds(), wall.getBounds())) {
+					health.setxPosition((int)(health.getxPosition() + wall.getWidth() + dP(10)));
+				}
+				if(Rect.intersects(health.getBounds(), wall.getBounds())) {
+					health.setyPosition((int)(health.getyPosition() + wall.getHeight() + dP(10)));
+				}
+			}
+			this.powerUpList.add(health);
 		}
 
+		//conditions for the coin power-up
 		if((this.player.getScore() > 30) && (this.player.getScore() % 30 == 0) && (this.numTicks % 300 == 0)) {
-			this.powerUpList.add(new PowerUp(powerUpType.COIN, powerUpList.size(), (int)(Math.random() * this.getWidth()), (int)(Math.random() * this.getHeight()), dP(40), dP(40), BitmapFactory.decodeResource(getResources(), R.drawable.coin_sprite)));
+			PowerUp coin = new PowerUp(powerUpType.COIN, powerUpList.size(), (int)(Math.random() * this.getWidth()), (int)(Math.random() * this.getHeight()), dP(40), dP(40), BitmapFactory.decodeResource(getResources(), R.drawable.coin_sprite));
+			Iterator<GamePiece> iteratorWallList = this.wallList.iterator();
+			while(iteratorWallList.hasNext()) {
+				GamePiece wall = iteratorWallList.next();
+				if(Rect.intersects(coin.getBounds(), wall.getBounds())) {
+					coin.setxPosition((int)(coin.getxPosition() + wall.getWidth() + dP(10)));
+				}
+				if(Rect.intersects(coin.getBounds(), wall.getBounds())) {
+					coin.setyPosition((int)(coin.getyPosition() + wall.getHeight() + dP(10)));
+				}
+			}
+			this.powerUpList.add(coin);
 		}
+		
 		//check collisions between all ghosts and the player
 		Iterator<Ghost> iterator = this.ghostList.iterator();
 		while(iterator.hasNext()) {
@@ -270,6 +299,7 @@ public class GameView extends View {
 				}
 			}
 		}
+		
 		//remove friendly ghost when it gets to the bottom
 		if(friendlyGhostList.size() >0) {
 			for(GamePiece boundry : this.wallList) {
@@ -328,11 +358,13 @@ public class GameView extends View {
 		while(powerUpIterator.hasNext()) {
 			PowerUp power = powerUpIterator.next();
 			powerUpType type = CollisionBox.checkCollision(this.player, power);
+			
+			//bomb effect
 			if(type == powerUpType.BOMB) {
 				ghostList.clear();
 				player.setScore(player.getScore() + 5);
 				powerUpIterator.remove();
-			} else if(type == powerUpType.HEALTH) {
+			} else if(type == powerUpType.HEALTH) {  //heart effect
 				if(player.getHealth() < 800) {
 					player.setHealth(player.getHealth() + 200);
 					powerUpIterator.remove();
@@ -342,7 +374,7 @@ public class GameView extends View {
 				} else {
 					powerUpIterator.remove();
 				}
-			} else  if(type == powerUpType.COIN){
+			} else  if(type == powerUpType.COIN){  //coin effect
 				player.setScore(player.getScore() + 10);
 				powerUpIterator.remove();
 			} else {
@@ -371,14 +403,17 @@ public class GameView extends View {
 		for(Ghost ghost : this.ghostList) {
 			ghost.draw(c);
 		}
+		//draw power-ups
 		for(PowerUp powerUp: this.powerUpList) {
 			powerUp.draw(c);
-			if(friendlyGhostList.size() >0) {
-				for(FriendlyGhost ghost: this.friendlyGhostList) {
-					ghost.draw(c);
-				}
+		}
+		//draw the friendly ghost
+		if(friendlyGhostList.size() >0) {
+			for(FriendlyGhost ghost: this.friendlyGhostList) {
+				ghost.draw(c);
 			}
 		}
+		
 		//****VERY IMPORTANT FOR AESTHETICS****
 		// must draw ghosts before walls so that ghosts will be hidden when they move behind wall
 
