@@ -22,7 +22,11 @@ public class GameView extends View {
 	
 	private ArrayList<Ghost> ghostList = new ArrayList<Ghost>();
 	private ArrayList<GamePiece> wallList = new ArrayList<GamePiece>();
+	
+	
 	private HealthBar healthBar;
+	
+	private ArrayList<FriendlyGhost> friendlyGhostList = new ArrayList<FriendlyGhost>();
 	private Player player;
 	private int numTicks;
 	private int timeLeftButtonTouched;
@@ -165,6 +169,10 @@ public class GameView extends View {
 		if((this.player.getScore() > 0) &&(this.player.getScore() % 10 == 0) && (this.numTicks % 150 == 0)) {
 			this.ghostList.add(new Ghost(ghostList.size(), (int)(Math.random() * this.getWidth()), (int)(Math.random() * this.getHeight()), 60, 60, BitmapFactory.decodeResource(getResources(), R.drawable.ghost_object_image_red), this.player, 10));
 		}
+		
+		if(this.numTicks % 1000 == 0 && friendlyGhostList.size() == 0) {
+			this.friendlyGhostList.add(new FriendlyGhost(friendlyGhostList.size(), (int)(Math.random() * this.getWidth()), 20, 40, 40, BitmapFactory.decodeResource(getResources(), R.drawable.ghost_object_image_red)));
+		}
 
 		//check collisions between all ghosts and the player
 		Iterator<Ghost> iterator = this.ghostList.iterator();
@@ -217,6 +225,31 @@ public class GameView extends View {
 				
 			}
 			
+		}
+		
+		//check collision between friendly ghost and ghosts
+		if(friendlyGhostList.size() >0) {
+		Iterator<Ghost> iteratorGhostList = this.ghostList.iterator();
+		while(iteratorGhostList.hasNext()) {
+			Ghost g = iteratorGhostList.next();
+			Iterator<FriendlyGhost> i = this.friendlyGhostList.iterator();
+			while(i.hasNext()) {
+			FriendlyGhost fGhost = i.next();
+			boolean collisionResult = CollisionBox.checkCollisionFriendlyGhost(fGhost, g);
+			if (collisionResult == true) {
+				i.remove();
+				iteratorGhostList.remove();
+			}
+		}
+		}
+		}
+		//remove friendly ghost when it gets to the bottom
+		if(friendlyGhostList.size() >0) {
+		for(GamePiece boundry : this.wallList) {
+		if(this.friendlyGhostList.get(0).getBounds().intersect(boundry.getBounds())) {
+			this.friendlyGhostList.clear();
+		}
+		}
 		}
 		
 		//check collisions between all walls and player (assume ghost can phase through walls?)
@@ -280,6 +313,11 @@ public class GameView extends View {
 			this.healthBar.setBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.health_bar_image_green));
 		}
 		
+		if(friendlyGhostList.size() >0) {
+		for(FriendlyGhost ghost : this.friendlyGhostList) {
+			ghost.update();
+		}
+		}
 		//Draw all onScreenObjects in game
 		
 		//draw player
@@ -289,6 +327,11 @@ public class GameView extends View {
 			ghost.draw(c);
 		}
 		
+		if(friendlyGhostList.size() >0) {
+		for(FriendlyGhost ghost: this.friendlyGhostList) {
+			ghost.draw(c);
+		}
+		}
 		//****VERY IMPORTANT FOR AESTHETICS****
 		// must draw ghosts before walls so that ghosts will be hidden when they move behind wall
 		
