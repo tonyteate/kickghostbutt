@@ -32,10 +32,13 @@ public final class R {
         public static final int ghost_image_green=0x7f020007;
         public static final int ghost_object_image=0x7f020008;
         public static final int ghost_object_image_red=0x7f020009;
-        public static final int heart_sprite=0x7f02000a;
-        public static final int ic_launcher=0x7f02000b;
-        public static final int top_down_knight=0x7f02000c;
-        public static final int wall_image=0x7f02000d;
+        public static final int health_bar_image_green=0x7f02000a;
+        public static final int health_bar_image_grey=0x7f02000b;
+        public static final int health_bar_image_red=0x7f02000c;
+        public static final int heart_sprite=0x7f02000d;
+        public static final int ic_launcher=0x7f02000e;
+        public static final int top_down_knight=0x7f02000f;
+        public static final int wall_image=0x7f020010;
     }
     public static final class id {
         public static final int action_settings=0x7f080007;

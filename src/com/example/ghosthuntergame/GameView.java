@@ -17,9 +17,19 @@ import android.view.View;
 
 public class GameView extends View {
 
+	private boolean gameOver = false;
+	private long startTime = 0;
+	private long endTime = 0;
+	private long minGameTime = 10;
+	
 	private ArrayList<Ghost> ghostList = new ArrayList<Ghost>();
 	private ArrayList<GamePiece> wallList = new ArrayList<GamePiece>();
 	private ArrayList<PowerUp> powerUpList = new ArrayList<PowerUp>();
+	
+	
+	private HealthBar healthBar;
+	
+
 	private ArrayList<FriendlyGhost> friendlyGhostList = new ArrayList<FriendlyGhost>();
 	private Player player;
 	private int numTicks;
@@ -62,6 +72,8 @@ public class GameView extends View {
 			buttonDownImage = Bitmap.createScaledBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.button_arrow_down), buttonDown.width(), buttonDown.height(), true);
 			buttonUpImage = Bitmap.createScaledBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.button_arrow_up), buttonUp.width(), buttonUp.height(), true);
 			buttonRightImage = Bitmap.createScaledBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.button_arrow_right), buttonRight.width(), buttonRight.height(), true);
+			
+			
 		}
 	}
 
@@ -87,6 +99,10 @@ public class GameView extends View {
 	public void initialize() {
 		this.player = new Player(1, dP(50), dP(50), dP(50), dP(50), BitmapFactory.decodeResource(getResources(), R.drawable.top_down_knight));
 
+		
+		//(int id, int xP, int yP, int height, int width, Bitmap sourceImage, Player player)
+		this.healthBar = new HealthBar(2, dP(100), dP(40), dP(14), dP(100), BitmapFactory.decodeResource(getResources(), R.drawable.health_bar_image_green), BitmapFactory.decodeResource(getResources(), R.drawable.health_bar_image_grey), this.player);
+	
 		//boundaries: top, bottom, right, left
 		//		int xPosition = 0;
 		//		int yPosition = 0;
@@ -118,6 +134,9 @@ public class GameView extends View {
 
 	@Override
 	public void onDraw(Canvas c) {
+		
+		this.startTime = System.currentTimeMillis();
+		
 		super.onDraw(c);
 
 		numTicks += 1;
@@ -390,6 +409,14 @@ public class GameView extends View {
 		for(Ghost ghost : this.ghostList) {
 			ghost.update();
 		}
+		//update healthBar
+		this.healthBar.update();
+		if(this.healthBar.changeColor() == 1) {
+			this.healthBar.setBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.health_bar_image_red));
+		} else {
+			this.healthBar.setBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.health_bar_image_green));
+		}
+		
 		if(friendlyGhostList.size() >0) {
 			for(FriendlyGhost ghost : this.friendlyGhostList) {
 				ghost.update();
@@ -403,6 +430,7 @@ public class GameView extends View {
 		for(Ghost ghost : this.ghostList) {
 			ghost.draw(c);
 		}
+
 		//draw power-ups
 		for(PowerUp powerUp: this.powerUpList) {
 			powerUp.draw(c);
@@ -430,7 +458,31 @@ public class GameView extends View {
 		c.drawText("Health: " + this.player.getHealth() + "", dP(100), dP(30), paint);
 
 
+
 		invalidate();
+
+		this.healthBar.draw(c);
+		
+		//update gameOver
+		this.gameOver = (this.player.getHealth() <= 0);
+		
+		//Get system time: endTime
+		this.endTime = System.currentTimeMillis();
+		
+		System.out.println("--- " + (this.endTime - this.startTime));
+		
+		if(gameOver == false) {
+			if((this.endTime - this.startTime) >=  this.minGameTime) {
+				invalidate();
+			} else {
+				while((this.endTime - this.startTime) < this.minGameTime) {
+					this.endTime = System.currentTimeMillis();
+				}
+			}
+			invalidate();
+		}
+
+
 	}
 
 	public ArrayList<Ghost> getGhostList() {
