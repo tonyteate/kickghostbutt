@@ -458,9 +458,6 @@ public class GameView extends View {
 		c.drawText("Health: " + this.player.getHealth() + "", dP(100), dP(30), paint);
 
 
-
-		invalidate();
-
 		this.healthBar.draw(c);
 		
 		//update gameOver
