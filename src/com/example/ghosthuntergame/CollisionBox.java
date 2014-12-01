@@ -5,6 +5,23 @@ import com.example.ghosthuntergame.PowerUp.powerUpType;
 import android.graphics.Rect;
 
 //class contains all methods that handle collision of objects in game
+
+//List of methods
+/*
+ * Player & Ghost
+ * Player & Wall
+ * Player & PowerUp
+ * FirendlyGhost & Ghost
+ * Ghost & Wall
+ * Ghost & PowerUp 
+ * Ghost & Ghost
+ * PowerUp & Wall
+ * PowerUp & FriendlyGhost
+ * PowerUp & PowerUp
+ * 
+ */
+
+
 public class CollisionBox {
 	
 	//returns integers based on what is to be done in gameView based on collision and relative posiitions of ghost and player
@@ -98,9 +115,9 @@ public class CollisionBox {
 	}
 	
 	//________________________________________________________________________________________________________________
-	// PLAYER & GAMEPIECE
+	// PLAYER & WALL
 	
-	public static int checkCollision(Player player, GamePiece gamePiece) {
+	public static int checkCollision(Player player, Wall wall) {
 		//CASE 1: player collides with top of gamePiece
 			//within gameView class:
 				
@@ -119,8 +136,9 @@ public class CollisionBox {
 		int bottom = 2;	//CASE 2
 		int right = 3;	//CASE 3
 		int left = 4;	//CASE 4
+		int inside = 5;	//CASE 5
 		
-		boolean collides = Rect.intersects(player.getBounds(),gamePiece.getBounds());
+		boolean collides = Rect.intersects(player.getBounds(),wall.getBounds());
 		
 		if(collides) {
 			
@@ -139,34 +157,38 @@ public class CollisionBox {
 			double playerWidth = player.getWidth();
 			double playerYVelocity = player.getyVelocity();
 			
-			double gamePieceX = gamePiece.getxPosition();
-			double gamePieceY = gamePiece.getyPosition();
-			double gamePieceHeight = gamePiece.getHeight();
-			double gamePieceWidth = gamePiece.getWidth();
+			double wallX = wall.getxPosition();
+			double wallY = wall.getyPosition();
+			double wallHeight = wall.getHeight();
+			double wallWidth = wall.getWidth();
 			
 			//CASE 1
 			//player collides with TOP of ghost and player y velocity is down (positive)
-			if((playerY + (0.5*playerHeight)) < (gamePieceY - (0.5*gamePieceHeight) + buffer)){
+			if((playerY + (0.5*playerHeight)) < (wallY - (0.5*wallHeight) + buffer)){
 				return top;
 			}
 			
 			//CASE 2
 			//player collides with BOTTOM of ghost
-			if((playerY - (0.5*playerHeight)) > (gamePieceY + (0.5*gamePieceHeight) - buffer)) {
+			if((playerY - (0.5*playerHeight)) > (wallY + (0.5*wallHeight) - buffer)) {
 				return bottom;
 			}
 			
 			//CASE 3
 			//player collides with RIGHT of ghost
-			if((playerX - (0.5*playerWidth)) > (gamePieceX + (0.5*gamePieceWidth) - buffer)) {
+			if((playerX - (0.5*playerWidth)) > (wallX + (0.5*wallWidth) - buffer)) {
 				return right;
 			}
 			
 			//CASE 4
 			//player collides with LEFT of ghost
-			if((playerX + (0.5*playerWidth)) < (gamePieceX - (0.5*gamePieceWidth) + buffer)) {
+			if((playerX + (0.5*playerWidth)) < (wallX - (0.5*wallWidth) + buffer)) {
 				return left;
 			}
+			
+			//CASE 5
+			//player inside of wall
+			return inside;
 		}
 		
 		return 0;
@@ -192,13 +214,99 @@ public class CollisionBox {
 			}
 		}	
 
-		public static boolean checkCollisionFriendlyGhost(FriendlyGhost f, Ghost g) {
+		
+	//________________________________________________________________________________________________________________
+		// FRIENDLYGHOST & GHOST
+		public static int checkCollision(FriendlyGhost f, Ghost g) {
 			if (Rect.intersects(f.getBounds(), g.getBounds())) {
-				return true;
+				return 1;
 			} else {
-				return false;
+				return 0;
 			}
 
+		}
+		
+	//________________________________________________________________________________________________________________
+		// GHOST & WALL
+		
+		public static int checkCollision(Ghost ghost, Wall wall) {
+			
+			boolean collides = Rect.intersects(ghost.getBounds(), wall.getBounds());
+			
+			if(collides) {
+				return 1;
+			}
+			return 0;
+		}
+		
+	//________________________________________________________________________________________________________________
+		// GHOST & POWERUP
+
+		public static int checkCollision(Ghost ghost, PowerUp powerUp) {
+
+			boolean collides = Rect.intersects(ghost.getBounds(), powerUp.getBounds());
+
+			if(collides) {
+				return 1;
+			}
+			return 0;
+		}
+		
+	//________________________________________________________________________________________________________________
+		// GHOST & GHOST
+
+		public static int checkCollision(Ghost ghost1, Ghost ghost2) {
+
+			boolean collides = Rect.intersects(ghost1.getBounds(), ghost2.getBounds());
+
+			if(collides) {
+				return 1;
+			}
+			return 0;
+		}
+	
+	/*	PowerUp & Wall
+		 * PowerUp & FriendlyGhost
+		 * PowerUp & PowerUp
+	*/	
+		
+	//________________________________________________________________________________________________________________
+		// PowerUp & WALL
+
+		public static int checkCollision(PowerUp powerUp, Wall wall) {
+
+			boolean collides = Rect.intersects(powerUp.getBounds(), wall.getBounds());
+
+			if(collides) {
+				return 1;
+			}
+			return 0;
+		}
+		
+	//________________________________________________________________________________________________________________
+		// PowerUp & FriendlyGhost
+
+		public static int checkCollision(PowerUp powerUp, FriendlyGhost friendlyGhost) {
+
+			boolean collides = Rect.intersects(powerUp.getBounds(), friendlyGhost.getBounds());
+
+			if(collides) {
+				return 1;
+			}
+			return 0;
+		}
+		
+	//________________________________________________________________________________________________________________
+		// PowerUp & PowerUp
+
+		public static int checkCollision(PowerUp powerUp1, PowerUp powerUp2) {
+
+			boolean collides = Rect.intersects(powerUp1.getBounds(), powerUp2.getBounds());
+
+			if(collides) {
+				return 1;
+			}
+			return 0;
 		}
 	
 		

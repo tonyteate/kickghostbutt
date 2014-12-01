@@ -37,8 +37,10 @@ public final class R {
         public static final int health_bar_image_red=0x7f02000c;
         public static final int heart_sprite=0x7f02000d;
         public static final int ic_launcher=0x7f02000e;
-        public static final int top_down_knight=0x7f02000f;
-        public static final int wall_image=0x7f020010;
+        public static final int ooyl_game_over_image=0x7f02000f;
+        public static final int plus_level_wall_image=0x7f020010;
+        public static final int top_down_knight=0x7f020011;
+        public static final int wall_image=0x7f020012;
     }
     public static final class id {
         public static final int action_settings=0x7f080007;
@@ -52,19 +54,22 @@ public final class R {
     }
     public static final class layout {
         public static final int activity_game=0x7f030000;
-        public static final int activity_home=0x7f030001;
-        public static final int activity_splash=0x7f030002;
+        public static final int activity_game_over=0x7f030001;
+        public static final int activity_home=0x7f030002;
+        public static final int activity_splash=0x7f030003;
     }
     public static final class menu {
         public static final int game=0x7f070000;
-        public static final int home=0x7f070001;
-        public static final int splash=0x7f070002;
+        public static final int game_over=0x7f070001;
+        public static final int home=0x7f070002;
+        public static final int splash=0x7f070003;
     }
     public static final class string {
         public static final int action_settings=0x7f050003;
         public static final int app_name=0x7f050000;
         public static final int hello_world=0x7f050002;
         public static final int title_activity_game=0x7f050005;
+        public static final int title_activity_game_over=0x7f050006;
         public static final int title_activity_home=0x7f050004;
         public static final int title_activity_splash=0x7f050001;
     }
