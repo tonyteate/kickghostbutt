@@ -14,6 +14,7 @@ import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Rect;
 import android.os.Handler;
+import android.graphics.Typeface;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
@@ -31,11 +32,9 @@ public class GameView extends View {
 	private ArrayList<Ghost> ghostList = new ArrayList<Ghost>();
 	private ArrayList<Wall> wallList = new ArrayList<Wall>();
 	private ArrayList<PowerUp> powerUpList = new ArrayList<PowerUp>();
-	
+	private ArrayList<Wall> boundaryList = new ArrayList<Wall>();
 	
 	private HealthBar healthBar;
-
-	
 
 	private ArrayList<FriendlyGhost> friendlyGhostList = new ArrayList<FriendlyGhost>();
 	private Player player;
@@ -67,14 +66,17 @@ public class GameView extends View {
 	private Bitmap bottomOfBoxBitmap;
 	private Bitmap rightOfBoxBitmap;
 	private Bitmap leftOfBoxBitmap;
+	private int scoreWallBoxLevelStarted = 10000;
 	private boolean wallBoxAdded = false;
 	private boolean original3WallsReAdded = false;
 	
 	private Bitmap verticalWallBitmap;
 	private Bitmap horizontalWallBitmap;
+	private int scorePlusGridLevelStarted = 10000;
 	private boolean plusGridLevelDisplayed = false;
 	private boolean plusGridLevelReset = false;
-
+	private Paint scorePaint;
+	
 	public int dP(int pixels) {
 		return GameActivity.dP(pixels);
 	}
@@ -85,17 +87,16 @@ public class GameView extends View {
 		if(w != 0) {
 			//integers to create the buttons
 			int padding = dP(10);
-			int screenWidth = getWidth() - 5*padding;
+			int buttonHeight = dP(100);
+			int screenWidth = getWidth();
 			int screenHeight = getHeight();
-			int buttonWidth = screenWidth/4;
-
-			buttonLeft = new Rect(padding, screenHeight - dP(100), buttonWidth + padding, screenHeight - dP(20));
-			buttonDown = new Rect(buttonLeft.right + padding, screenHeight - dP(100), buttonLeft.right + padding + buttonWidth, screenHeight - dP(20));
-			buttonUp = new Rect(buttonDown.right + padding, screenHeight - dP(100), buttonDown.right + padding + buttonWidth, screenHeight - dP(20));
-			buttonRight = new Rect(buttonUp.right + padding, screenHeight - dP(100), buttonUp.right + padding + buttonWidth, screenHeight - dP(20));
-
-			System.out.println(buttonLeft.height());
-			System.out.println(buttonLeft.width());
+			int screenWidthAdjusted = screenWidth - 5*padding;
+			int buttonWidth = screenWidthAdjusted/4;
+			
+			buttonLeft = new Rect(padding, screenHeight - buttonHeight, buttonWidth + padding, screenHeight - dP(20));
+			buttonDown = new Rect(buttonLeft.right + padding, screenHeight - buttonHeight, buttonLeft.right + padding + buttonWidth, screenHeight - dP(20));
+			buttonUp = new Rect(buttonDown.right + padding, screenHeight - buttonHeight, buttonDown.right + padding + buttonWidth, screenHeight - dP(20));
+			buttonRight = new Rect(buttonUp.right + padding, screenHeight - buttonHeight, buttonUp.right + padding + buttonWidth, screenHeight - dP(20));
 
 			buttonLeftImage = Bitmap.createScaledBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.button_arrow_left), buttonLeft.width(), buttonLeft.height(), true);
 			buttonDownImage = Bitmap.createScaledBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.button_arrow_down), buttonDown.width(), buttonDown.height(), true);
@@ -103,6 +104,18 @@ public class GameView extends View {
 			buttonRightImage = Bitmap.createScaledBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.button_arrow_right), buttonRight.width(), buttonRight.height(), true);
 			
 			
+			
+			// walls
+			int wallRelativeWidth = this.player.width * 2;
+			int wallRelativeHeight = this.player.height * 2;
+			// left wall
+			this.boundaryList.add(new Wall(this.wallList.size(), -(wallRelativeWidth/2), screenHeight/2, screenHeight, wallRelativeWidth, Bitmap.createBitmap(wallRelativeWidth, screenHeight, Bitmap.Config.ARGB_8888), false));
+			// right wall
+			this.boundaryList.add(new Wall(this.wallList.size(), screenWidth + wallRelativeWidth/2, screenHeight/2, screenHeight, wallRelativeWidth, Bitmap.createBitmap(wallRelativeWidth, screenHeight, Bitmap.Config.ARGB_8888), false));			
+			// top wall
+			this.boundaryList.add(new Wall(this.wallList.size(), screenWidth/2, -(wallRelativeHeight/2), wallRelativeHeight, screenWidth, Bitmap.createBitmap(screenWidth, wallRelativeHeight, Bitmap.Config.ARGB_8888), false));						
+			// bottom wall
+			this.boundaryList.add(new Wall(this.wallList.size(), screenWidth/2, screenHeight - buttonHeight/2, buttonHeight, screenWidth, Bitmap.createBitmap(screenWidth, buttonHeight, Bitmap.Config.ARGB_8888), false));									
 			this.deviceScreenHeight = (int)getHeight();
 			this.deviceScreenWidth = (int)getWidth();
 		
@@ -132,9 +145,7 @@ public class GameView extends View {
 			//create bitmap for horizontal wall
 			this.wallHeight = 40;
 			this.wallWidth = this.deviceScreenWidth;
-			this.horizontalWallBitmap = Bitmap.createScaledBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.plus_level_wall_image), dP(this.wallWidth), dP(this.wallHeight), true);
-
-			
+			this.horizontalWallBitmap = Bitmap.createScaledBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.plus_level_wall_image), dP(this.wallWidth), dP(this.wallHeight), true);	
 			
 		}
 	}
@@ -164,34 +175,13 @@ public class GameView extends View {
 		
 		//(int id, int xP, int yP, int height, int width, Bitmap sourceImage, Player player)
 		this.healthBar = new HealthBar(2, dP(100), dP(40), dP(14), dP(100), BitmapFactory.decodeResource(getResources(), R.drawable.health_bar_image_green), BitmapFactory.decodeResource(getResources(), R.drawable.health_bar_image_grey), this.player);
-	
-		//boundaries: top, bottom, right, left
-		//		int xPosition = 0;
-		//		int yPosition = 0;
-		//		int width = 0;
-		//		int height = 0;
-		//		Bitmap bitmap = null;
-		//		
-		//		//top
-		//		xPosition = (int)(getWidth() / 2);
-		//		yPosition = (int)(0 - this.player.getHeight());
-		//		width = (int)(this.getWidth() + 4*this.player.getWidth());
-		//		height = (int)(2*this.player.getHeight());
-		//		
-		//		System.out.println("*********** " + getWidth() + " ***************************************************************************");
-		//		System.out.println("width: " + width);
-		//		System.out.println("height: " + height);
-		//		System.out.println("x Pos: " + xPosition);
-		//		System.out.println("y Pos: " + yPosition);
-		//		
-		//		
-		//		bitmap = Bitmap.createScaledBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.wall_image), width, height, true);
-		//		this.wallList.add(new GamePiece(this.wallList.size(), dP(xPosition), dP(yPosition), dP(width), dP(height), bitmap));
-
-		//basic wall
-		//this.wallList.add(new Wall(this.wallList.size(), dP(200), dP(200), dP(30), dP(100), Bitmap.createScaledBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.wall_image), dP(100), dP(200), true)));
 
 		this.numTicks = 0;
+		
+		scorePaint = new Paint();
+		scorePaint.setARGB(255, 255, 0, 0);
+		scorePaint.setTypeface(Typeface.DEFAULT);		
+		scorePaint.setTextSize(dP(14));
 	}
 
 	@Override
@@ -220,9 +210,11 @@ public class GameView extends View {
 			this.wallList.add(new Wall(this.wallList.size(), this.deviceScreenWidth/2, dP(380), dP(this.wallHeight), dP(this.wallWidth), this.wall2Bitmap, true, 1, 0, (this.deviceScreenWidth/2) - dP(140), (this.deviceScreenWidth/2) + dP(140), dP(380), dP(380)));
 			this.wall2Added = true;
 		}
-		if((this.player.score >= 50) && !this.wallBoxAdded) {
+		if((this.player.score >= 35) && (this.player.score % 35 == 0) && !this.wallBoxAdded) {
 			
 			this.wallList.clear();
+			
+			this.scoreWallBoxLevelStarted = this.player.score;
 			
 			this.wallHeight = 40;
 			this.wallWidth = 300;
@@ -240,12 +232,13 @@ public class GameView extends View {
 			this.wallList.add(new Wall(this.wallList.size(), this.deviceScreenWidth/2 + dP(130), dP(400), dP(this.wallHeight), dP(this.wallWidth), this.rightOfBoxBitmap, false));
 			
 			this.wallBoxAdded = true;
+			this.original3WallsReAdded = false;
 			
 			//set player position inside of box
 			this.player.setxPosition(this.deviceScreenWidth/2);
 			this.player.setyPosition(dP(400));
 		}
-		if((this.player.score >= 53) && !this.original3WallsReAdded) {
+		if((this.player.score >= (this.scoreWallBoxLevelStarted + 3)) && !this.original3WallsReAdded) {
 			//remove box walls
 			this.wallList.clear();
 			
@@ -257,8 +250,11 @@ public class GameView extends View {
 			this.wallList.add(new Wall(this.wallList.size(), this.deviceScreenWidth/2, dP(380), dP(this.wallHeight), dP(this.wallWidth), this.wall2Bitmap, true, 1, 0, (this.deviceScreenWidth/2) - dP(140), (this.deviceScreenWidth/2) + dP(140), dP(380), dP(380)));
 			
 			this.original3WallsReAdded = true;
+			this.wallBoxAdded = false;
 		}
-		if((this.player.score >= 30) && !this.plusGridLevelDisplayed) {
+		if((this.player.score >= 50) && (this.player.score % 50 == 0) && !this.plusGridLevelDisplayed) {
+			
+			this.scorePlusGridLevelStarted = this.player.score;
 			
 			//add horizontal wall
 			this.wallHeight = dP(40);
@@ -273,11 +269,13 @@ public class GameView extends View {
 			this.wallList.add(new Wall(this.wallList.size(), dP(this.wallWidth/2) + dP(this.player.getWidth()), this.deviceScreenHeight/2, dP(this.wallHeight), dP(this.wallWidth), this.verticalWallBitmap, true, 1, 0, dP(this.wallWidth/2) + dP(this.player.getWidth()), this.deviceScreenWidth - dP(this.wallWidth/2) - dP(this.player.getWidth()), this.deviceScreenHeight/2, this.deviceScreenHeight/2));
 			
 			this.plusGridLevelDisplayed = true;
+			this.plusGridLevelReset = false;
 		}
-		if((this.player.score >= 40) && !this.plusGridLevelReset) {
+		if((this.player.score >= (this.scorePlusGridLevelStarted + 10)) && !this.plusGridLevelReset) {
 			this.wallList.remove(this.wallList.size()-1);
 			this.wallList.remove(this.wallList.size()-1);
 			this.plusGridLevelReset = true;
+			this.plusGridLevelDisplayed = false;
 		}
 		
 		
@@ -285,18 +283,6 @@ public class GameView extends View {
 		super.onDraw(c);
 
 		numTicks += 1;
-
-		//left, top, right, bottom
-
-		//left
-		c.drawBitmap(buttonLeftImage, null, buttonLeft, null);
-		//down
-		c.drawBitmap(buttonDownImage, null, buttonDown, null);
-		//up
-		c.drawBitmap(buttonUpImage, null, buttonUp, null);
-		//right
-		c.drawBitmap(buttonRightImage, null, buttonRight, null);
-		
 		
 		//call this code every 1000 clock cycles
 
@@ -324,7 +310,7 @@ public class GameView extends View {
 				
 				//check for collision conflicts with current game objects on screen (collision means spawnConflict is present)
 				int numConflicts = 0;
-				//ghost and layer
+				//ghost and player
 				if(CollisionBox.checkCollision(this.player, this.ghostList.get(this.ghostList.size()-1)) != 0) {
 					numConflicts += 1;
 				}
@@ -349,6 +335,12 @@ public class GameView extends View {
 				//ghost and friendlyGhost
 				for(FriendlyGhost friendlyGhost : this.friendlyGhostList) {
 					if((CollisionBox.checkCollision(friendlyGhost, this.ghostList.get(this.ghostList.size()-1)) != 0)) {
+						numConflicts += 1;
+					}
+				}
+				//ghosts and boundaries
+				for(Wall boundary : this.boundaryList) {
+					if((CollisionBox.checkCollision(this.ghostList.get(this.ghostList.size()-1), boundary) != 0)) {
 						numConflicts += 1;
 					}
 				}
@@ -430,6 +422,12 @@ public class GameView extends View {
 						numConflicts += 1;
 					}
 				}
+				//ghost and boundary
+				for(Wall boundary : this.boundaryList) {
+					if((CollisionBox.checkCollision(this.ghostList.get(this.ghostList.size()-1), boundary) != 0)) {
+						numConflicts += 1;
+					}
+				}
 				
 				if(numConflicts == 0) {
 					this.spawnConflict = false;
@@ -454,11 +452,11 @@ public class GameView extends View {
 
 		//conditions for making friendly ghosts
 		if(this.numTicks % 1000 == 0 && friendlyGhostList.size() == 0) {
-			this.friendlyGhostList.add(new FriendlyGhost(friendlyGhostList.size(), (int)(Math.random() * this.getWidth()), 20, dP(40), dP(40), BitmapFactory.decodeResource(getResources(), R.drawable.ghost_object_image_red)));
+			this.friendlyGhostList.add(new FriendlyGhost(friendlyGhostList.size(), (int)(Math.random() * this.getWidth()), dP(45), dP(40), dP(40), BitmapFactory.decodeResource(getResources(), R.drawable.ghost_image_green)));
 		}
 
 		//conditions for the bomb power-up
-		if((this.player.getScore() >= 25) && (this.player.getScore() % 20 == 0) && (this.numTicks % 300 == 0)) {
+		if((this.player.getScore() >= 25) && (this.numTicks % 3000 == 0)) {
 			
 			int bombX = 0;
 			int bombY = 0;
@@ -503,6 +501,12 @@ public class GameView extends View {
 						numConflicts += 1;
 					}
 				}
+				//powerUp and boundary
+				for(Wall boundary : this.boundaryList) {
+					if((CollisionBox.checkCollision(this.powerUpList.get(this.powerUpList.size()-1), boundary) != 0)) {
+						numConflicts += 1;
+					}
+				}
 				
 				if(numConflicts == 0) {
 					this.spawnConflict = false;
@@ -526,7 +530,7 @@ public class GameView extends View {
 		}
 
 		//conditions to start making heart power-ups
-		if((this.player.getScore() >= 15) && (this.player.getScore() % 15 == 0) && (this.numTicks % 300 == 0)) {
+		if((this.player.getScore() >= 15) && (this.numTicks % 2500 == 0)) {
 			
 			int healthX = 0;
 			int healthY = 0;
@@ -571,6 +575,12 @@ public class GameView extends View {
 						numConflicts += 1;
 					}
 				}
+				//powerUp and boundary
+				for(Wall boundary : this.boundaryList) {
+					if((CollisionBox.checkCollision(this.powerUpList.get(this.powerUpList.size()-1), boundary) != 0)) {
+						numConflicts += 1;
+					}
+				}
 				
 				if(numConflicts == 0) {
 					this.spawnConflict = false;
@@ -592,20 +602,7 @@ public class GameView extends View {
 			
 		}
 
-		//conditions for the coin power-up (30,30,300)
-		if((this.player.getScore() > 30) && (this.player.getScore() % 1 == 30) && (this.numTicks % 300 == 0)) {
-//			PowerUp coin = new PowerUp(powerUpType.COIN, powerUpList.size(), (int)(Math.random() * this.getWidth()), (int)(Math.random() * this.getHeight()), dP(40), dP(40), BitmapFactory.decodeResource(getResources(), R.drawable.coin_sprite));
-//			Iterator<Wall> iteratorWallList = this.wallList.iterator();
-//			while(iteratorWallList.hasNext()) {
-//				GamePiece wall = iteratorWallList.next();
-//				if(Rect.intersects(coin.getBounds(), wall.getBounds())) {
-//					coin.setxPosition((int)(coin.getxPosition() + wall.getWidth() + dP(10)));
-//				}
-//				if(Rect.intersects(coin.getBounds(), wall.getBounds())) {
-//					coin.setyPosition((int)(coin.getyPosition() + wall.getHeight() + dP(10)));
-//				}
-//			}
-//			this.powerUpList.add(coin);
+		if((this.player.getScore() >= 30) &&(this.numTicks % 4000 == 0)) {
 			
 			int coinX = 0;
 			int coinY = 0;
@@ -647,6 +644,12 @@ public class GameView extends View {
 				//friendlyGhost and powerUp
 				for(FriendlyGhost friendlyGhost : this.friendlyGhostList) {
 					if((CollisionBox.checkCollision(this.powerUpList.get(this.powerUpList.size()-1), friendlyGhost) != 0)) {
+						numConflicts += 1;
+					}
+				}
+				//powerUp and boundary
+				for(Wall boundary : this.boundaryList) {
+					if((CollisionBox.checkCollision(this.powerUpList.get(this.powerUpList.size()-1), boundary) != 0)) {
 						numConflicts += 1;
 					}
 				}
@@ -743,13 +746,14 @@ public class GameView extends View {
 		}
 		
 		//remove friendly ghost when it gets to the bottom
-//		if(friendlyGhostList.size() >0) {
-//			for(GamePiece boundry : this.wallList) {
-//				if(this.friendlyGhostList.get(0).getBounds().intersect(boundry.getBounds())) {
-//					this.friendlyGhostList.clear();
-//				}
-//			}
-//		}
+		if(friendlyGhostList.size() >0) {
+			for(Wall boundry : this.boundaryList) {
+				if(this.friendlyGhostList.get(0).getBounds().intersect(boundry.getBounds())) {
+					this.friendlyGhostList.clear();
+					break;
+				}
+			}
+		}
 
 		//check collisions between all walls and player (assume ghost can phase through walls?)
 		Iterator<Wall> iteratorWallList = this.wallList.iterator();
@@ -794,6 +798,50 @@ public class GameView extends View {
 			}
 
 		}
+		
+		//check collisions between all walls and player (assume ghost can phase through walls?)
+		Iterator<Wall> iteratorBoundaryList = this.boundaryList.iterator();
+		while(iteratorBoundaryList.hasNext()) {
+			Wall boundary = iteratorBoundaryList.next();
+			int collisionResult = CollisionBox.checkCollision(this.player, boundary);
+
+			if(collisionResult == 1) {
+
+				//reverse y-direction of the player
+				this.player.setyVelocity((int)(-1 * this.player.getyVelocity()));
+				//reset player position outside of wall
+				//	-1 at end ensures player is outside in case decimal gets truncated on casting to int if height of wall is odd
+				this.player.setyPosition((int)(boundary.getyPosition() - boundary.getHeight()/2 - this.player.getHeight()/2) /*- 1*/);
+
+			} else if(collisionResult == 2) {
+
+				//reverse y-direction of the player
+				this.player.setyVelocity((int)(-1 * this.player.getyVelocity()));
+				//reset player position outside of wall
+				//	+1 at end ensures player is outside in case decimal gets truncated on casting to int if height of wall is odd
+				this.player.setyPosition((int)(boundary.getyPosition() + boundary.getHeight()/2 + this.player.getHeight()/2) /*+ 1*/);
+
+			} else if(collisionResult == 3) {
+
+				//reverse x-direction of player
+				this.player.setxVelocity((int)(-1 * this.player.getxVelocity()));
+				//reset player position outside of wall
+				//	+1 at end ensures player is outside in case decimal gets truncated on casting to int if height of wall is odd
+				this.player.setxPosition((int)(boundary.getxPosition() + boundary.getWidth()/2  + this.player.getWidth()/2) /*+ 1*/);
+
+			} else if(collisionResult == 4) {
+
+				//reverse x-direction of player
+				this.player.setxVelocity((int)(-1 * this.player.getxVelocity()));
+				//reset player position outside of wall
+				//	-1 at end ensures player is outside in case decimal gets truncated on casting to int if height of wall is odd
+				this.player.setxPosition((int)(boundary.getxPosition() - boundary.getWidth()/2 - this.player.getWidth()/2) /*- 1*/);
+
+			} else {
+
+			}
+
+		}
 
 		//check for power-up collection
 		Iterator<PowerUp> powerUpIterator = this.powerUpList.iterator();
@@ -807,11 +855,11 @@ public class GameView extends View {
 				player.setScore(player.getScore() + 5);
 				powerUpIterator.remove();
 			} else if(type == powerUpType.HEALTH) {  //heart effect
-				if(player.getHealth() < 800) {
-					player.setHealth(player.getHealth() + 200);
+				if(player.getHealth() < 4000) {
+					player.setHealth(player.getHealth() + 500);
 					powerUpIterator.remove();
-				} else if (player.getHealth() > 800 && player.getHealth() < 1000){
-					player.setHealth(1000);
+				} else if (player.getHealth() > 4500 && player.getHealth() < 5000){
+					player.setHealth(5000);
 					powerUpIterator.remove();
 				} else {
 					powerUpIterator.remove();
@@ -875,18 +923,24 @@ public class GameView extends View {
 		// must draw ghosts before walls so that ghosts will be hidden when they move behind wall
 
 		//draw walls
-		for(GamePiece wall : this.wallList) {
+		for(Wall wall : this.wallList) {
 			wall.draw(c);
 		}
-
+		
+		//draw boundaries
+		for(Wall wall : this.boundaryList) {
+			wall.draw(c);
+		}
+		
+		c.drawBitmap(buttonLeftImage, null, buttonLeft, null);
+		c.drawBitmap(buttonDownImage, null, buttonDown, null);
+		c.drawBitmap(buttonUpImage, null, buttonUp, null);
+		c.drawBitmap(buttonRightImage, null, buttonRight, null);
+		
 		//draw score
-		Paint paint = new Paint();
-		paint.setARGB(255, 255, 0, 0);
-
-		c.drawText("Score: " + this.player.getScore(), dP(200), dP(30), paint);
-		c.drawText("Health: " + this.player.getHealth() + "", dP(100), dP(30), paint);
-
-
+		c.drawText("Score: " + this.player.getScore(), dP(200), dP(30), scorePaint);
+		c.drawText("Health: " + this.player.getHealth() + "", dP(100), dP(30), scorePaint);
+		
 		this.healthBar.draw(c);
 		
 		//update gameOver
