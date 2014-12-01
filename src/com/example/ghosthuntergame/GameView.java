@@ -4,16 +4,20 @@ import java.util.ArrayList;
 import java.util.Iterator;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Rect;
+import android.graphics.Typeface;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
 
 public class GameView extends View {
+	
+	public static final String PLAYER_SCORE = "player_score";
 
 	private ArrayList<Ghost> ghostList = new ArrayList<Ghost>();
 	private ArrayList<GamePiece> wallList = new ArrayList<GamePiece>();
@@ -31,6 +35,7 @@ public class GameView extends View {
 	private Bitmap buttonDownImage;
 	private Bitmap buttonUpImage;
 	private Bitmap buttonRightImage;
+	private Paint scorePaint;
 	
 	public int dP(int pixels) {
 		return GameActivity.dP(pixels);
@@ -39,25 +44,37 @@ public class GameView extends View {
 	@Override
 	protected void onSizeChanged(int w, int h, int oldw, int oldh) {
 		super.onSizeChanged(w, h, oldw, oldh);
+		System.out.println(h);
 		if(w != 0) {
 			//integers to create the buttons
 			int padding = dP(10);
-			int screenWidth = getWidth() - 5*padding;
+			int buttonHeight = dP(100);
+			int screenWidth = getWidth();
 			int screenHeight = getHeight();
-			int buttonWidth = screenWidth/4;
+			int screenWidthAdjusted = screenWidth - 5*padding;
+			int buttonWidth = screenWidthAdjusted/4;
 			
-			buttonLeft = new Rect(padding, screenHeight - dP(100), buttonWidth + padding, screenHeight - dP(20));
-			buttonDown = new Rect(buttonLeft.right + padding, screenHeight - dP(100), buttonLeft.right + padding + buttonWidth, screenHeight - dP(20));
-			buttonUp = new Rect(buttonDown.right + padding, screenHeight - dP(100), buttonDown.right + padding + buttonWidth, screenHeight - dP(20));
-			buttonRight = new Rect(buttonUp.right + padding, screenHeight - dP(100), buttonUp.right + padding + buttonWidth, screenHeight - dP(20));
-			
-			System.out.println(buttonLeft.height());
-			System.out.println(buttonLeft.width());
+			buttonLeft = new Rect(padding, screenHeight - buttonHeight, buttonWidth + padding, screenHeight - dP(20));
+			buttonDown = new Rect(buttonLeft.right + padding, screenHeight - buttonHeight, buttonLeft.right + padding + buttonWidth, screenHeight - dP(20));
+			buttonUp = new Rect(buttonDown.right + padding, screenHeight - buttonHeight, buttonDown.right + padding + buttonWidth, screenHeight - dP(20));
+			buttonRight = new Rect(buttonUp.right + padding, screenHeight - buttonHeight, buttonUp.right + padding + buttonWidth, screenHeight - dP(20));
 
 			buttonLeftImage = Bitmap.createScaledBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.button_arrow_left), buttonLeft.width(), buttonLeft.height(), true);
 			buttonDownImage = Bitmap.createScaledBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.button_arrow_down), buttonDown.width(), buttonDown.height(), true);
 			buttonUpImage = Bitmap.createScaledBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.button_arrow_up), buttonUp.width(), buttonUp.height(), true);
 			buttonRightImage = Bitmap.createScaledBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.button_arrow_right), buttonRight.width(), buttonRight.height(), true);
+			
+			// walls
+			int wallRelativeWidth = this.player.width * 2;
+			int wallRelativeHeight = this.player.height * 2;
+			// left wall
+			this.wallList.add(new GamePiece(this.wallList.size(), -(wallRelativeWidth/2), screenHeight/2, screenHeight, wallRelativeWidth, Bitmap.createBitmap(wallRelativeWidth, screenHeight, Bitmap.Config.ARGB_8888)));
+			// right wall
+			this.wallList.add(new GamePiece(this.wallList.size(), screenWidth + wallRelativeWidth/2, screenHeight/2, screenHeight, wallRelativeWidth, Bitmap.createBitmap(wallRelativeWidth, screenHeight, Bitmap.Config.ARGB_8888)));			
+			// top wall
+			this.wallList.add(new GamePiece(this.wallList.size(), screenWidth/2, -(wallRelativeHeight/2), wallRelativeHeight, screenWidth, Bitmap.createBitmap(screenWidth, wallRelativeHeight, Bitmap.Config.ARGB_8888)));						
+			// bottom wall
+			this.wallList.add(new GamePiece(this.wallList.size(), screenWidth/2, screenHeight - buttonHeight/2, buttonHeight, screenWidth, Bitmap.createBitmap(screenWidth, buttonHeight, Bitmap.Config.ARGB_8888)));									
 		}
 	}
 	
@@ -81,54 +98,21 @@ public class GameView extends View {
 	}
 	
 	public void initialize() {
-		this.player = new Player(1, dP(50), dP(50), dP(50), dP(50), BitmapFactory.decodeResource(getResources(), R.drawable.top_down_knight));
-		
-		this.wallList = new ArrayList<GamePiece>();
-		//boundaries: top, bottom, right, left
-//		int xPosition = 0;
-//		int yPosition = 0;
-//		int width = 0;
-//		int height = 0;
-//		Bitmap bitmap = null;
-//		
-//		//top
-//		xPosition = (int)(getWidth() / 2);
-//		yPosition = (int)(0 - this.player.getHeight());
-//		width = (int)(this.getWidth() + 4*this.player.getWidth());
-//		height = (int)(2*this.player.getHeight());
-//		
-//		System.out.println("*********** " + getWidth() + " ***************************************************************************");
-//		System.out.println("width: " + width);
-//		System.out.println("height: " + height);
-//		System.out.println("x Pos: " + xPosition);
-//		System.out.println("y Pos: " + yPosition);
-//		
-//		
-//		bitmap = Bitmap.createScaledBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.wall_image), width, height, true);
-//		this.wallList.add(new GamePiece(this.wallList.size(), dP(xPosition), dP(yPosition), dP(width), dP(height), bitmap));
-		
-		//basic wall
-		this.wallList.add(new GamePiece(this.wallList.size(), dP(200), dP(200), dP(30), dP(100), Bitmap.createScaledBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.wall_image), dP(100), dP(200), true)));
-		
+		this.player = new Player(1, dP(50), dP(50), dP(50), dP(50), BitmapFactory.decodeResource(getResources(), R.drawable.top_down_knight));		
 		this.numTicks = 0;
+		
+		scorePaint = new Paint();
+		scorePaint.setARGB(255, 255, 0, 0);
+		scorePaint.setTypeface(Typeface.DEFAULT);		
+		scorePaint.setTextSize(dP(14));
 	}
 
 	@Override
 	public void onDraw(Canvas c) {
 		super.onDraw(c);
 				
-		numTicks += 1;
-
-		//left, top, right, bottom
 		
-		//left
-		c.drawBitmap(buttonLeftImage, null, buttonLeft, null);
-		//down
-		c.drawBitmap(buttonDownImage, null, buttonDown, null);
-		//up
-		c.drawBitmap(buttonUpImage, null, buttonUp, null);
-		//right
-		c.drawBitmap(buttonRightImage, null, buttonRight, null);
+		numTicks += 1;
 		
 		//call this code every 1000 clock cycles
 
@@ -277,14 +261,22 @@ public class GameView extends View {
 			wall.draw(c);
 		}
 		
+		c.drawBitmap(buttonLeftImage, null, buttonLeft, null);
+		c.drawBitmap(buttonDownImage, null, buttonDown, null);
+		c.drawBitmap(buttonUpImage, null, buttonUp, null);
+		c.drawBitmap(buttonRightImage, null, buttonRight, null);
+		
 		//draw score
-		Paint paint = new Paint();
-		paint.setARGB(255, 255, 0, 0);
+		c.drawText("Score: " + this.player.getScore(), dP(200), dP(30), scorePaint);
+		c.drawText("Health: " + this.player.getHealth() + "", dP(100), dP(30), scorePaint);
 		
-		c.drawText("Score: " + this.player.getScore(), dP(200), dP(30), paint);
-		c.drawText("Health: " + this.player.getHealth() + "", dP(100), dP(30), paint);
-		
-		
+		if (this.player.getHealth() <= 0){
+//			Context context = getContext();
+//			Intent intent = new Intent(context, GameOverActivity.class);
+//			intent.putExtra(PLAYER_SCORE, this.player.getScore());
+//			context.startActivity(intent);
+			return;
+		}
 		invalidate();
 	}
 
