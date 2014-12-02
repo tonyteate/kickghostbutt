@@ -20,6 +20,8 @@ import android.view.MotionEvent;
 import android.view.View;
 
 public class GameView extends View {
+	
+	public static final String PLAYER_SCORE = "player_score";
 
 	private boolean gameOver = false;
 	private long startTime = 0;
@@ -969,7 +971,8 @@ public class GameView extends View {
 				@Override
 				public void run() {
 					Intent intent = new Intent(getContext(), GameOverActivity.class);
-					((Activity)getContext()).startActivity(intent);
+					intent.putExtra(PLAYER_SCORE, player.score);
+					((Activity) getContext()).startActivity(intent);
 				}
 			}, 100);
 		}

@@ -9,7 +9,7 @@ public class Player extends GamePiece {
 	
 	public Player(int id, int xP, int yP, int height, int width, Bitmap sourceImage) {
 		super(id, xP, yP, height, width, sourceImage);
-		this.health = 5000;
+		this.health = 1000;
 		this.score = 0;
 		// TODO Auto-generated constructor stub
 	}
