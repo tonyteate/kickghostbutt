@@ -272,8 +272,10 @@ public class GameView extends View {
 			this.plusGridLevelReset = false;
 		}
 		if((this.player.score >= (this.scorePlusGridLevelStarted + 10)) && !this.plusGridLevelReset) {
-			this.wallList.remove(this.wallList.size()-1);
-			this.wallList.remove(this.wallList.size()-1);
+			if(this.wallList.size() > 3) {
+				this.wallList.remove(this.wallList.size()-1);
+				this.wallList.remove(this.wallList.size()-1);
+			}
 			this.plusGridLevelReset = true;
 			this.plusGridLevelDisplayed = false;
 		}
