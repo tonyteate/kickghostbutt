@@ -31,8 +31,7 @@
             android:label="@string/title_activity_game" >
         </activity>
         <activity
-            android:name=".GameOverActivity"
-            android:label="@string/title_activity_game_over" >
+            android:name=".GameOverActivity">
         </activity>
     </application>
 

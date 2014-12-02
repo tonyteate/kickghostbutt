@@ -20,6 +20,8 @@ import android.view.MotionEvent;
 import android.view.View;
 
 public class GameView extends View {
+	
+	public static final String PLAYER_SCORE = "player_score";
 
 	private boolean gameOver = false;
 	private long startTime = 0;
@@ -87,11 +89,12 @@ public class GameView extends View {
 		if(w != 0) {
 			//integers to create the buttons
 			int padding = dP(10);
-			int buttonHeight = dP(100);
+			//int buttonHeight = dP(100);
 			int screenWidth = getWidth();
 			int screenHeight = getHeight();
 			int screenWidthAdjusted = screenWidth - 5*padding;
 			int buttonWidth = screenWidthAdjusted/4;
+			int buttonHeight = buttonWidth;
 			
 			buttonLeft = new Rect(padding, screenHeight - buttonHeight, buttonWidth + padding, screenHeight - dP(20));
 			buttonDown = new Rect(buttonLeft.right + padding, screenHeight - buttonHeight, buttonLeft.right + padding + buttonWidth, screenHeight - dP(20));
@@ -971,7 +974,8 @@ public class GameView extends View {
 				@Override
 				public void run() {
 					Intent intent = new Intent(getContext(), GameOverActivity.class);
-					((Activity)getContext()).startActivity(intent);
+					intent.putExtra(PLAYER_SCORE, player.score);
+					((Activity) getContext()).startActivity(intent);
 				}
 			}, 100);
 		}
