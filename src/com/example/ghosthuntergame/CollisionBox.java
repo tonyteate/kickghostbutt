@@ -24,7 +24,7 @@ import android.graphics.Rect;
 
 public class CollisionBox {
 	
-	//returns integers based on what is to be done in gameView based on collision and relative posiitions of ghost and player
+	//returns integers based on what is to be done in gameView based on collision and relative positions of ghost and player
 	// 1-above
 	// 
 	

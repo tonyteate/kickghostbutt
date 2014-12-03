@@ -11,6 +11,4 @@ public class FriendlyGhost extends GamePiece {
 		this.setyVelocity(1);
 	}
 
-
-
 }

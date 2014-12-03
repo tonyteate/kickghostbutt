@@ -466,14 +466,14 @@ public class GameView extends View {
 			int bombX = 0;
 			int bombY = 0;
 			
-			//keep trying to generate a new ghost while there is a spawnConflict
+			//keep trying to generate a new bomb while there is a spawnConflict
 			while(this.spawnConflict && (this.numSpawnAttempts <= this.maxNumSpawnAttempts)) {	
 				
 				//generate random position within screen of game
 				bombX = (int)(Math.random() * this.getWidth());
 				bombY = (int)(Math.random() * this.getHeight());
 				
-				//create new bomb with random position and add to ghostList
+				//create new bomb with random position and add to powerUpList
 				this.powerUpList.add(new PowerUp(powerUpType.BOMB, powerUpList.size(), bombX, bombY, dP(40), dP(40), BitmapFactory.decodeResource(getResources(), R.drawable.bomb_sprite)));
 				
 				//check for collision conflicts with current game objects on screen (collision means spawnConflict is present)
@@ -522,7 +522,7 @@ public class GameView extends View {
 				}
 				
 			}
-			//reset spawnConflict so more ghosts can be spawned at next iterations
+			//reset spawnConflict so more bombs can be spawned at next iterations
 			if(this.spawnConflict == false) {
 				this.spawnConflict = true;
 			}
@@ -540,14 +540,14 @@ public class GameView extends View {
 			int healthX = 0;
 			int healthY = 0;
 			
-			//keep trying to generate a new ghost while there is a spawnConflict
+			//keep trying to generate a new heart power-up while there is a spawnConflict
 			while(this.spawnConflict && (this.numSpawnAttempts <= this.maxNumSpawnAttempts)) {	
 				
 				//generate random position within screen of game
 				healthX = (int)(Math.random() * this.getWidth());
 				healthY = (int)(Math.random() * this.getHeight());
 				
-				//create new bomb with random position and add to ghostList
+				//create new heart with random position and add to powerUpList
 				this.powerUpList.add(new PowerUp(powerUpType.HEALTH, powerUpList.size(), healthX, healthY, dP(40), dP(40), BitmapFactory.decodeResource(getResources(), R.drawable.heart_sprite)));
 				
 				//check for collision conflicts with current game objects on screen (collision means spawnConflict is present)
@@ -596,7 +596,7 @@ public class GameView extends View {
 				}
 				
 			}
-			//reset spawnConflict so more ghosts can be spawned at next iterations
+			//reset spawnConflict so more hearts can be spawned at next iterations
 			if(this.spawnConflict == false) {
 				this.spawnConflict = true;
 			}
@@ -606,20 +606,21 @@ public class GameView extends View {
 			}
 			
 		}
-
+		
+		//conditions to start making coin power-ups
 		if((this.player.getScore() >= 30) &&(this.numTicks % 4000 == 0)) {
 			
 			int coinX = 0;
 			int coinY = 0;
 			
-			//keep trying to generate a new ghost while there is a spawnConflict
+			//keep trying to generate a new coin power-up while there is a spawnConflict
 			while(this.spawnConflict && (this.numSpawnAttempts <= this.maxNumSpawnAttempts)) {	
 				
 				//generate random position within screen of game
 				coinX = (int)(Math.random() * this.getWidth());
 				coinY = (int)(Math.random() * this.getHeight());
 				
-				//create new bomb with random position and add to ghostList
+				//create new coin with random position and add to ghostList
 				this.powerUpList.add(new PowerUp(powerUpType.COIN, powerUpList.size(), coinX, coinY, dP(40), dP(40), BitmapFactory.decodeResource(getResources(), R.drawable.coin_sprite)));
 				
 				//check for collision conflicts with current game objects on screen (collision means spawnConflict is present)
@@ -668,7 +669,7 @@ public class GameView extends View {
 				}
 				
 			}
-			//reset spawnConflict so more ghosts can be spawned at next iterations
+			//reset spawnConflict so more coins can be spawned at next iterations
 			if(this.spawnConflict == false) {
 				this.spawnConflict = true;
 			}

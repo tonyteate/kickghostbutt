@@ -11,7 +11,6 @@ public class Player extends GamePiece {
 		super(id, xP, yP, height, width, sourceImage);
 		this.health = 5000;
 		this.score = 0;
-		// TODO Auto-generated constructor stub
 	}
 
 	public int getHealth() {
