@@ -23,6 +23,9 @@ package com.example.ghosthuntergame;
  * 		http://developer.android.com/reference/android/graphics/Rect.html
  * 		http://developer.android.com/reference/android/graphics/Canvas.html
  * 		http://stackoverflow.com/questions/4039713/how-to-draw-text-on-canvas
+ *		http://www.giantbomb.com/forums/general-discussion-30/gb-community-game-night-6725/
+ *		http://pixgood.com/super-mario-bros-coin.html
+ *		http://makepixelart.com/artists/shagedelic/scary-monsters-and-nice-sprites
  * 
  */
 
